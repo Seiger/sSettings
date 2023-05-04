@@ -1,0 +1,36 @@
+{
+    "name": "seiger/ssettings",
+    "license": "GPL-3.0",
+    "type": "EvolutionCMS-Plugin",
+    "description": "Evocms package for work with Advanced settings for your website.",
+    "keywords": ["evocms", "evolution-cms", "settings"],
+    "authors": [
+        {
+            "name": "Serhii Korneliuk",
+            "email": "info@seigerit.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.4 || ^8.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Seiger\\sSettings\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Seiger\\sSettings\\sSettingsServiceProvider"
+            ],
+            "aliases": {
+                "sSettings": "Seiger\\sSettings\\Facades\\sSettings"
+            }
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "php artisan migrate"
+        ]
+    }
+}
