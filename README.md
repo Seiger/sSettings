@@ -1,5 +1,5 @@
 # sSettings for Evolution CMS 3
-![sSettings](https://github.com/Seiger/ssettings/releases/download/v1.0.0/sLang.jpg)
+![sSettings](https://repository-images.githubusercontent.com/627975404/56ba0688-1b24-4ea5-a58a-359fa4ef1be4)
 [![Latest Stable Version](https://img.shields.io/packagist/v/seiger/ssettings?label=version)](https://packagist.org/packages/seiger/ssettings)
 [![CMS Evolution](https://img.shields.io/badge/CMS-Evolution-brightgreen.svg)](https://github.com/evolution-cms/evolution)
 ![PHP version](https://img.shields.io/packagist/php-v/seiger/ssettings)

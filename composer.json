@@ -11,7 +11,7 @@
         }
     ],
     "require": {
-        "php": ">=7.4 || ^8.0"
+        "php": ">=7.4"
     },
     "autoload": {
         "psr-4": {
@@ -29,8 +29,6 @@
         }
     },
     "scripts": {
-        "post-autoload-dump": [
-            "php artisan migrate"
-        ]
+        "post-autoload-dump": []
     }
 }
