@@ -28,10 +28,4 @@ php artisan package:installrequire seiger/ssettings "*"
 php artisan vendor:publish --provider="Seiger\sSettings\sSettingsServiceProvider"
 ```
 
-Run make DB structure with command:
-
-```console
-php artisan migrate
-```
-
 [See full documentation here](https://seiger.github.io/ssettings/)
