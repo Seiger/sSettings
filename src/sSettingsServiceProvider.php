@@ -16,9 +16,6 @@ class sSettingsServiceProvider extends ServiceProvider
             // Add custom routes for package
             include(__DIR__.'/Http/routes.php');
 
-            // Migration for create tables
-            //$this->loadMigrationsFrom(dirname(__DIR__) . '/database/migrations');
-
             // Views
             $this->loadViewsFrom(dirname(__DIR__) . '/views', 'sSettings');
 
@@ -29,6 +26,7 @@ class sSettingsServiceProvider extends ServiceProvider
             $this->publishes([
                 dirname(__DIR__) . '/config/sSettingsAlias.php' => config_path('app/aliases/sSettings.php', true),
                 dirname(__DIR__) . '/config/sSettingsSettings.php' => config_path('cms/settings/sSettings.php', true),
+                dirname(__DIR__) . '/images/seirger-it-logo.svg' => public_path('assets/images/ssettings/seirger-it-logo.svg'),
             ]);
         }
 

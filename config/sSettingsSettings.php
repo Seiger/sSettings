@@ -20,6 +20,12 @@
                 "description" => "sSettings::global.phones_description",
                 "type" => "text",
             ],
+            [
+                "name" => "google_analytics",
+                "label" => "sSettings::global.google_analytics",
+                "description" => "sSettings::global.google_analytics_description",
+                "type" => "textarea",
+            ],
         ]
     ],
 ];

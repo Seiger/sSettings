@@ -27,8 +27,7 @@
             </div>
         </div>
     </form>
-    <div id="copyright">
-        @lang('sSettings::global.copyright') <strong><a href="https://seigerit.com/" target="_blank">Seiger IT</a></strong>
+    <div id="copyright"><a href="https://seigerit.com/" target="_blank"><img src="/assets/images/ssettings/seirger-it-logo.svg"/></a>
     </div>
 @endsection
 @push('scripts.bot')
@@ -51,7 +50,7 @@
         }
     </script>
     <style>
-        #copyright{position:fixed;bottom:0;right:0;background-color:#0057b8;color:#ffd700;padding:5px;}
-        #copyright a{color:#ffd700;}
+        #copyright{position:fixed;bottom:0;right:0;background-color:#0057b8;padding:3px 7px;}
+        #copyright img{width:9em;}
     </style>
 @endpush

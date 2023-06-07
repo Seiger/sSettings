@@ -1,6 +1,7 @@
 @extends('manager::template.page')
 @section('content')
     <h1><i class="@lang('sSettings::global.icon')" data-tooltip="@lang('sSettings::global.description')"></i>@lang('sSettings::global.title')</h1>
+    @if(!is_writable(EVO_CORE_PATH . 'custom/config/cms/settings/sSettings.php'))<div class="alert alert-danger" role="alert">@lang('sSettings::global.not_writable')</div>@endif
     <form name="ssettings" id="ssettings" class="content" method="post" action="{{route('sSettings.update-configure')}}" onsubmit="documentDirty=false;">
         <div class="sectionBody">
             <div class="tab-pane" id="resourcesPane">
@@ -71,6 +72,7 @@
                                                                             <div class="col-8 b-btn-group">
                                                                                 <select name="tabs[{{$tabId}}][fields][{{$loop->index}}][type]" class="form-control form-control-sm">
                                                                                     <option value="text">Text</option>
+                                                                                    <option value="textarea">Textarea</option>
                                                                                 </select>
                                                                             </div>
                                                                         </div>
@@ -92,17 +94,17 @@
             </div>
         </div>
     </form>
-    <div id="copyright">
-        @lang('sSettings::global.copyright') <strong><a href="https://seigerit.com/" target="_blank">Seiger IT</a></strong>
-    </div>
+    <div id="copyright"><a href="https://seigerit.com/" target="_blank"><img src="/assets/images/ssettings/seirger-it-logo.svg"/></a>
 @endsection
 @push('scripts.bot')
     <div id="actions">
         <div class="btn-group">
-            <a id="Button1" class="btn btn-success" href="javascript:void(0);" onclick="saveForm('#ssettings');">
-                <i class="fa fa-floppy-o"></i>
-                <span>@lang('global.save')</span>
-            </a>
+            @if(is_writable(EVO_CORE_PATH . 'custom/config/cms/settings/sSettings.php'))
+                <a id="Button1" class="btn btn-success" href="javascript:void(0);" onclick="saveForm('#ssettings');">
+                    <i class="fa fa-floppy-o"></i>
+                    <span>@lang('global.save')</span>
+                </a>
+            @endif
             <a id="Button3" class="btn btn-secondary" href="{{route('sSettings.index')}}">
                 <i class="fa fa-times-circle"></i>
                 <span>@lang('global.cancel')</span>
@@ -128,8 +130,8 @@
         function saveForm(selector){$(selector).find('.b-tab').each(function(index){let parent=$(selector).find('.b-tab').eq(index);let tabId=parent.find('.b-tab-title-input input[name]').first().attr('name').replace("tabs[","").replace("][label]","");parent.find('.b-field').each(function(position){parent.find('.b-field').eq(position).find('input').filter(function(){return this.name.match(/]\[name]/)}).attr('name', 'tabs['+tabId+'][fields]['+position+'][name]');parent.find('.b-field').eq(position).find('input').filter(function(){return this.name.match(/]\[label]/)}).attr('name', 'tabs['+tabId+'][fields]['+position+'][label]');parent.find('.b-field').eq(position).find('input').filter(function(){return this.name.match(/]\[description]/)}).attr('name', 'tabs['+tabId+'][fields]['+position+'][description]');parent.find('.b-field').eq(position).find('select').filter(function(){return this.name.match(/]\[type]/)}).attr('name', 'tabs['+tabId+'][fields]['+position+'][type]')})});$(selector).submit()}
     </script>
     <style>
-        #copyright{position:fixed;bottom:0;right:0;background-color:#0057b8;color:#ffd700;padding:5px}
-        #copyright a{color:#ffd700}
+        #copyright{position:fixed;bottom:0;right:0;background-color:#0057b8;padding:3px 7px;}
+        #copyright img{width:9em;}
         .alertify .ajs-footer .ajs-buttons .ajs-button.ajs-ok {color:#fff;background-color:#d9534f;border-color:#d9534f;}
         .builder .row{display:flex;flex-wrap:wrap;margin-left:-.25rem;margin-right:-.25rem;cursor:default}
         .builder .row::after{display:none}
@@ -249,6 +251,7 @@
                             <div class="col-8 b-btn-group">
                                 <select name="tabs[tabId][fields][99999][type]" class="form-control form-control-sm">
                                     <option value="text">Text</option>
+                                    <option value="textarea">Textarea</option>
                                 </select>
                             </div>
                         </div>
