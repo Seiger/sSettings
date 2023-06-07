@@ -1,10 +1,25 @@
 <?php return [
     "basicTab" => [
-        "label" => "",
+        "label" => "sSettings::global.basicTab",
         "fields" => [
-            "label" => "",
-            "name" => "",
-            "type" => "",
+            [
+                "name" => "email",
+                "label" => "sSettings::global.email",
+                "description" => "sSettings::global.email_description",
+                "type" => "text",
+            ],
+            [
+                "name" => "phone",
+                "label" => "sSettings::global.phone",
+                "description" => "sSettings::global.phone_description",
+                "type" => "text",
+            ],
+            [
+                "name" => "phones",
+                "label" => "sSettings::global.phones",
+                "description" => "sSettings::global.phones_description",
+                "type" => "text",
+            ],
         ]
     ],
 ];
