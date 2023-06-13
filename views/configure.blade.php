@@ -2,7 +2,7 @@
 @section('content')
     <h1><i class="@lang('sSettings::global.icon')" data-tooltip="@lang('sSettings::global.description')"></i>@lang('sSettings::global.title')</h1>
     @if(!is_writable(EVO_CORE_PATH . 'custom/config/cms/settings/sSettings.php'))<div class="alert alert-danger" role="alert">@lang('sSettings::global.not_writable')</div>@endif
-    <form name="ssettings" id="ssettings" class="content" method="post" action="{{route('sSettings.update-configure')}}" onsubmit="documentDirty=false;">
+    <form name="ssettings" id="ssettings" class="content" method="post" action="{{sSettings::route('sSettings.update-configure')}}" onsubmit="documentDirty=false;">
         <div class="sectionBody">
             <div class="tab-pane" id="resourcesPane">
                 <script>tpResources = new WebFXTabPane(document.getElementById('resourcesPane'), false);</script>
@@ -94,7 +94,6 @@
             </div>
         </div>
     </form>
-    <div id="copyright"><a href="https://seigerit.com/" target="_blank"><img src="/assets/images/ssettings/seirger-it-logo.svg"/></a>
 @endsection
 @push('scripts.bot')
     <div id="actions">
@@ -105,7 +104,7 @@
                     <span>@lang('global.save')</span>
                 </a>
             @endif
-            <a id="Button3" class="btn btn-secondary" href="{{route('sSettings.index')}}">
+            <a id="Button3" class="btn btn-secondary" href="{{sSettings::route('sSettings.index')}}">
                 <i class="fa fa-times-circle"></i>
                 <span>@lang('global.cancel')</span>
             </a>
@@ -260,4 +259,5 @@
             </div>
         </div>
     </div>
+    <div id="copyright"><a href="https://seigerit.com/" target="_blank"><img src="/assets/images/ssettings/seirger-it-logo.svg"/></a></div>
 @endpush

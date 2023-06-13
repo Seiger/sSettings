@@ -4,6 +4,7 @@
  */
 
 use Illuminate\Support\Facades\Event;
+use Seiger\sSettings\Facades\sSettings;
 
 /**
  * Add Menu item
@@ -13,7 +14,7 @@ Event::listen('evolution.OnManagerMenuPrerender', function($params) {
         'ssettings',
         'tools',
         '<i class="'.__('sSettings::global.icon').'"></i><span class="menu-item-text">'.__('sSettings::global.title').'</span>',
-        route('sSettings.index'),
+        sSettings::route('sSettings.index'),
         __('sSettings::global.title'),
         "",
         "",

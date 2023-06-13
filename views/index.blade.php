@@ -1,7 +1,7 @@
 @extends('manager::template.page')
 @section('content')
     <h1><i class="@lang('sSettings::global.icon')" data-tooltip="@lang('sSettings::global.description')"></i>@lang('sSettings::global.title')</h1>
-    <form name="ssettings" id="ssettings" class="content" method="post" action="{{route('sSettings.update-settings')}}" onsubmit="documentDirty=false;">
+    <form name="ssettings" id="ssettings" class="content" method="post" action="{{sSettings::route('sSettings.update-settings')}}" onsubmit="documentDirty=false;">
         <div class="sectionBody">
             <div class="tab-pane" id="resourcesPane">
                 <script>tpResources = new WebFXTabPane(document.getElementById('resourcesPane'), false);</script>
@@ -38,7 +38,7 @@
                 <span>@lang('global.save')</span>
             </a>
             @if(evo()->hasPermission('settings'))
-                <a id="Button4" class="btn btn-warning" href="{{route('sSettings.configure')}}">
+                <a id="Button4" class="btn btn-warning" href="{{sSettings::route('sSettings.configure')}}">
                     <i class="fa fa-hammer"></i><span>@lang('global.edit_settings')</span>
                 </a>
             @endif
