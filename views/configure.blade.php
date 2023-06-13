@@ -129,7 +129,7 @@
         function saveForm(selector){$(selector).find('.b-tab').each(function(index){let parent=$(selector).find('.b-tab').eq(index);let tabId=parent.find('.b-tab-title-input input[name]').first().attr('name').replace("tabs[","").replace("][label]","");parent.find('.b-field').each(function(position){parent.find('.b-field').eq(position).find('input').filter(function(){return this.name.match(/]\[name]/)}).attr('name', 'tabs['+tabId+'][fields]['+position+'][name]');parent.find('.b-field').eq(position).find('input').filter(function(){return this.name.match(/]\[label]/)}).attr('name', 'tabs['+tabId+'][fields]['+position+'][label]');parent.find('.b-field').eq(position).find('input').filter(function(){return this.name.match(/]\[description]/)}).attr('name', 'tabs['+tabId+'][fields]['+position+'][description]');parent.find('.b-field').eq(position).find('select').filter(function(){return this.name.match(/]\[type]/)}).attr('name', 'tabs['+tabId+'][fields]['+position+'][type]')})});$(selector).submit()}
     </script>
     <style>
-        #copyright{position:fixed;bottom:0;right:0;background-color:#0057b8;padding:3px 7px;}
+        #copyright{position:fixed;bottom:0;right:0;background-color:#0057b8;padding:3px 7px;border-radius:5px;}
         #copyright img{width:9em;}
         .alertify .ajs-footer .ajs-buttons .ajs-button.ajs-ok {color:#fff;background-color:#d9534f;border-color:#d9534f;}
         .builder .row{display:flex;flex-wrap:wrap;margin-left:-.25rem;margin-right:-.25rem;cursor:default}
@@ -259,5 +259,5 @@
             </div>
         </div>
     </div>
-    <div id="copyright"><a href="https://seigerit.com/" target="_blank"><img src="/assets/images/ssettings/seirger-it-logo.svg"/></a></div>
+    <div id="copyright"><a href="https://seigerit.com/" target="_blank"><img src="/assets/site/seirgerit-yellow.svg"/></a></div>
 @endpush
