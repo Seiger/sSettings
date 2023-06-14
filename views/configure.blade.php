@@ -259,5 +259,5 @@
             </div>
         </div>
     </div>
-    <div id="copyright"><a href="https://seigerit.com/" target="_blank"><img src="/assets/site/seirgerit-yellow.svg"/></a></div>
+    <div id="copyright"><a href="https://seigerit.com/" target="_blank"><img src="{{evo()->getConfig('site_url', '/')}}assets/site/seirgerit-yellow.svg"/></a></div>
 @endpush
