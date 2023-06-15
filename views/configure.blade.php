@@ -1,7 +1,7 @@
 @extends('manager::template.page')
 @section('content')
     <h1><i class="@lang('sSettings::global.icon')" data-tooltip="@lang('sSettings::global.description')"></i>@lang('sSettings::global.title')</h1>
-    @if(!is_writable(EVO_CORE_PATH . 'custom/config/cms/settings/sSettings.php'))<div class="alert alert-danger" role="alert">@lang('sSettings::global.not_writable')</div>@endif
+    @if(!is_writable(EVO_CORE_PATH . 'custom/config/seiger/settings/sSettings.php'))<div class="alert alert-danger" role="alert">@lang('sSettings::global.not_writable')</div>@endif
     <form name="ssettings" id="ssettings" class="content" method="post" action="{{sSettings::route('sSettings.update-configure')}}" onsubmit="documentDirty=false;">
         <div class="sectionBody">
             <div class="tab-pane" id="resourcesPane">
@@ -98,7 +98,7 @@
 @push('scripts.bot')
     <div id="actions">
         <div class="btn-group">
-            @if(is_writable(EVO_CORE_PATH . 'custom/config/cms/settings/sSettings.php'))
+            @if(is_writable(EVO_CORE_PATH . 'custom/config/seiger/settings/sSettings.php'))
                 <a id="Button1" class="btn btn-success" href="javascript:void(0);" onclick="saveForm('#ssettings');">
                     <i class="fa fa-floppy-o"></i>
                     <span>@lang('global.save')</span>
@@ -259,5 +259,5 @@
             </div>
         </div>
     </div>
-    <div id="copyright"><a href="https://seigerit.com/" target="_blank"><img src="{{evo()->getConfig('site_url', '/')}}assets/site/seirgerit-yellow.svg"/></a></div>
+    <div id="copyright"><a href="https://seigerit.com/" target="_blank"><img src="{{evo()->getConfig('site_url', '/')}}assets/site/seigerit-yellow.svg"/></a></div>
 @endpush

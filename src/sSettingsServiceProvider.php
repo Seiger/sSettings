@@ -25,8 +25,8 @@ class sSettingsServiceProvider extends ServiceProvider
             // For use config
             $this->publishes([
                 dirname(__DIR__) . '/config/sSettingsAlias.php' => config_path('app/aliases/sSettings.php', true),
-                dirname(__DIR__) . '/config/sSettingsSettings.php' => config_path('cms/settings/sSettings.php', true),
-                dirname(__DIR__) . '/images/seirgerit-yellow.svg' => public_path('assets/site/seirgerit-yellow.svg'),
+                dirname(__DIR__) . '/config/sSettingsSettings.php' => config_path('seiger/settings/sSettings.php', true),
+                dirname(__DIR__) . '/images/seigerit-yellow.svg' => public_path('assets/site/seigerit-yellow.svg'),
             ]);
         }
 

@@ -29,7 +29,7 @@
     'linkedin' => 'Linkedin',
     'message_for_dev' => 'To the developer! Be careful, an excessive number of configuration parameters can lead to an increase in server response time.',
     'no_title' => 'No title',
-    'not_writable' => 'The file ../core/custom/config/cms/settings/sSettings.php is not writable.',
+    'not_writable' => 'The file ../core/custom/config/seiger/settings/sSettings.php is not writable.',
     'office_description' => 'Enter the office address, if multilingualism is used, use the language keys as a list.',
     'office' => 'Office address',
     'phone_description' => 'Enter the site phone number.',
