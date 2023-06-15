@@ -34,7 +34,7 @@
                                                             <div class="row align-items-center">
                                                                 <div class="col-auto"><i class="fa fa-bars b-move"></i></div>
                                                                 <div class="col">@lang($field['label'])&emsp;<strong>[(sset_{{$field['name']}})]</strong></div>
-                                                                <div class="col-auto"><span class="badge badge-warning">{{$field['type']}}</span></div>
+                                                                <div class="col-auto"><span class="badge badge-warning">{{sSettings::listType()[$field['type']]}}</span></div>
                                                                 <div class="col-auto" onclick="onSettings($(this))"><i class="fa fa-cog b-btn-settings"></i></div>
                                                                 <div class="col-auto" onclick="onDeleteField($(this))"><i class="fa fa-minus-circle text-danger b-btn-del"></i></div>
                                                             </div>
@@ -70,9 +70,10 @@
                                                                         <div class="row b-setting">
                                                                             <div class="col-4">@lang('sSettings::global.field_type')</div>
                                                                             <div class="col-8 b-btn-group">
-                                                                                <select name="tabs[{{$tabId}}][fields][{{$loop->index}}][type]" class="form-control form-control-sm">
-                                                                                    <option value="text">Text</option>
-                                                                                    <option value="textarea">Textarea</option>
+                                                                                <select name="tabs[{{$tabId}}][fields][{{$loop->index}}][type]" class="form-control form-control-sm" onchange="changeType($(this))">
+                                                                                    @foreach(sSettings::listType() as $value => $text)
+                                                                                        <option value="{{$value}}" @if($field['type'] == $value) selected @endif>{{$text}}</option>
+                                                                                    @endforeach
                                                                                 </select>
                                                                             </div>
                                                                         </div>
@@ -126,6 +127,11 @@
         function onDeleteTab(target){let containers=document.querySelectorAll(".b-tab").length;parent=target.closest('.b-tab');if(containers < 3){alertify.error("@lang('sSettings::global.error_tab_delete')")}else{if(parent.find('.b-item').length){alertify.error("@lang('sSettings::global.error_tab_delete_is_files')")}else{parent.remove()}}}
         function onAddField(target){let parent=target.closest('.b-tab');let tabId=parent.find('.b-tab-title-input input[name]').first().attr('name').replace("tabs[","").replace("][label]","");let countFields=parent.find('.b-field').length;let newField=$('#newField').html();newField=newField.replace('tabs[tabId][fields][99999]','tabs['+tabId+'][fields]['+countFields+']');parent.find('.b-tab-fields').append(newField);sortableFields()}
         function onDeleteField(target){let parent=target.closest('.b-field');alertify.confirm("@lang('sSettings::global.are_you_sure')","@lang('sSettings::global.deleted_irretrievably')",function(){alertify.error("@lang('sSettings::global.deleted')");parent.remove()},function(){alertify.success("@lang('sSettings::global.canceled')")}).set('labels',{ok:"@lang('global.delete')",cancel:"@lang('global.cancel')"}).set({transition:'zoom'})}
+        function changeType(target){
+            let parent = target.closest('.b-item');
+            let typeVal = target.find(":selected").text();
+            parent.find('span.badge.badge-warning').text(typeVal);
+        }
         function saveForm(selector){$(selector).find('.b-tab').each(function(index){let parent=$(selector).find('.b-tab').eq(index);let tabId=parent.find('.b-tab-title-input input[name]').first().attr('name').replace("tabs[","").replace("][label]","");parent.find('.b-field').each(function(position){parent.find('.b-field').eq(position).find('input').filter(function(){return this.name.match(/]\[name]/)}).attr('name', 'tabs['+tabId+'][fields]['+position+'][name]');parent.find('.b-field').eq(position).find('input').filter(function(){return this.name.match(/]\[label]/)}).attr('name', 'tabs['+tabId+'][fields]['+position+'][label]');parent.find('.b-field').eq(position).find('input').filter(function(){return this.name.match(/]\[description]/)}).attr('name', 'tabs['+tabId+'][fields]['+position+'][description]');parent.find('.b-field').eq(position).find('select').filter(function(){return this.name.match(/]\[type]/)}).attr('name', 'tabs['+tabId+'][fields]['+position+'][type]')})});$(selector).submit()}
     </script>
     <style>
@@ -216,7 +222,7 @@
             <div class="row align-items-center">
                 <div class="col-auto"><i class="fa fa-bars b-move"></i></div>
                 <div class="col"></div>
-                <div class="col-auto"></div>
+                <div class="col-auto"><span class="badge badge-warning">{{sSettings::listType()['text']}}</span></div>
                 <div class="col-auto" onclick="onSettings($(this))"><i class="fa fa-cog b-btn-settings"></i></div>
                 <div class="col-auto" onclick="onDeleteField($(this))"><i class="fa fa-minus-circle text-danger b-btn-del"></i></div>
             </div>
@@ -248,9 +254,10 @@
                         <div class="row b-setting">
                             <div class="col-4">@lang('sSettings::global.field_type')</div>
                             <div class="col-8 b-btn-group">
-                                <select name="tabs[tabId][fields][99999][type]" class="form-control form-control-sm">
-                                    <option value="text">Text</option>
-                                    <option value="textarea">Textarea</option>
+                                <select name="tabs[tabId][fields][99999][type]" class="form-control form-control-sm" onchange="changeType($(this))">
+                                    @foreach(sSettings::listType() as $value => $text)
+                                        <option value="{{$value}}">{{$text}}</option>
+                                    @endforeach
                                 </select>
                             </div>
                         </div>

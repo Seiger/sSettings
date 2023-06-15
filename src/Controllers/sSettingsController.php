@@ -36,7 +36,10 @@ class sSettingsController
             unlink(EVO_CORE_PATH . 'custom/config/cms/settings/sSettings.php');
         }
 
-        $tabs = evo()->getConfig('sSettings', ["basicTab"=>["label"=>"","fields"=>[]]]);
+        $tabs = require EVO_CORE_PATH . 'custom/config/seiger/settings/sSettings.php';
+        if (!$tabs) {
+            $tabs = ["basicTab"=>["label"=>"","fields"=>[]]];
+        }
         return $this->view('index', ['tabs' => $tabs]);
     }
 
@@ -67,7 +70,10 @@ class sSettingsController
      */
     public function configure(): View
     {
-        $tabs = evo()->getConfig('sSettings', ["basicTab"=>["label"=>"","fields"=>[]]]);
+        $tabs = require EVO_CORE_PATH . 'custom/config/seiger/settings/sSettings.php';
+        if (!$tabs) {
+            $tabs = ["basicTab"=>["label"=>"","fields"=>[]]];
+        }
         return $this->view('configure', ['tabs' => $tabs]);
     }
 
@@ -168,7 +174,7 @@ class sSettingsController
             $string .= '];';
 
             // Save config
-            $handle = fopen(EVO_CORE_PATH . 'seiger/config/seiger/settings/sSettings.php', "w");
+            $handle = fopen(EVO_CORE_PATH . 'custom/config/seiger/settings/sSettings.php', "w");
             fwrite($handle, $string);
             fclose($handle);
 
