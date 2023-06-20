@@ -36,6 +36,10 @@ class sSettings
      */
     public function route(string $name): string
     {
-        return str_ireplace(evo()->getConfig('friendly_url_suffix', ''), '', route($name));
+        $route = rtrim(route($name), '/');
+        if (evo()->getConfig('friendly_url_suffix', '') != '/') {
+            $route = str_ireplace(evo()->getConfig('friendly_url_suffix', ''), '', route($name));
+        }
+        return $route;
     }
 }
