@@ -28,6 +28,23 @@
         </div>
     </form>
 @endsection
+@push('scripts.top')
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+    @include('sSettings::partials.style')
+    <script>
+        function evoRenderImageCheck(a) {
+            var b = document.getElementById('image_for_' + a.target.id),
+                c = new Image;
+            a.target.value ? (c.src = "<?php echo evo()->getConfig('site_url')?>" + a.target.value, c.onerror = function () {
+                b.style.backgroundImage = '', b.setAttribute('data-image', '');
+            }, c.onload = function () {
+                b.style.backgroundImage = 'url(\'' + this.src + '\')', b.setAttribute('data-image', this.src);
+            }) : (b.style.backgroundImage = '', b.setAttribute('data-image', ''));
+        }
+    </script>
+@endpush
 @push('scripts.bot')
     <div id="actions">
         <div class="btn-group">
@@ -42,10 +59,17 @@
             @endif
         </div>
     </div>
+    <script src="media/script/bootstrap/js/bootstrap.min.js"></script>
     <script> function saveForm(selector){$(selector).submit()}</script>
-    <style>
-        #copyright{position:fixed;bottom:0;right:0;background-color:#0057b8;padding:3px 7px;border-radius:5px;}
-        #copyright img{width:9em;}
-    </style>
-    <div id="copyright"><a href="https://seigerit.com/" target="_blank"><img src="{{evo()->getConfig('site_url', '/')}}assets/site/seigerit-yellow.svg"/></a></div>
+    <script>
+        function changestate(el) {
+            documentDirty = true;
+            if(parseInt(el.value) === 1) {
+                el.value = 0;
+            } else {
+                el.value = 1;
+            }
+        }
+    </script>
+    <div id="copyright"><a href="https://seigerit.com/" target="_blank"><img src="{{evo()->getConfig('site_url', '/')}}assets/site/seigerit-blue.svg"/></a></div>
 @endpush

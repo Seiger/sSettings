@@ -36,7 +36,7 @@
                                                                 <div class="col">@lang($field['label'])&emsp;<strong>[(sset_{{$field['name']}})]</strong></div>
                                                                 <div class="col-auto"><span class="badge badge-warning">{{sSettings::listType()[$field['type']]}}</span></div>
                                                                 <div class="col-auto" onclick="onSettings($(this))"><i class="fa fa-cog b-btn-settings"></i></div>
-                                                                <div class="col-auto" onclick="onDeleteField($(this))"><i class="fa fa-minus-circle text-danger b-btn-del"></i></div>
+                                                                <div class="col-auto" onclick="onDeleteField($(this))"><i title="@lang('global.remove')" class="fa fa-minus-circle text-danger b-btn-del"></i></div>
                                                             </div>
                                                             <div class="row col b-field-settings b-settings nu-context-menu">
                                                                 <div class="row b-settings-header">
@@ -96,6 +96,9 @@
         </div>
     </form>
 @endsection
+@push('scripts.top')
+    @include('sSettings::partials.style')
+@endpush
 @push('scripts.bot')
     <div id="actions">
         <div class="btn-group">
@@ -135,10 +138,6 @@
         function saveForm(selector){$(selector).find('.b-tab').each(function(index){let parent=$(selector).find('.b-tab').eq(index);let tabId=parent.find('.b-tab-title-input input[name]').first().attr('name').replace("tabs[","").replace("][label]","");parent.find('.b-field').each(function(position){parent.find('.b-field').eq(position).find('input').filter(function(){return this.name.match(/]\[name]/)}).attr('name', 'tabs['+tabId+'][fields]['+position+'][name]');parent.find('.b-field').eq(position).find('input').filter(function(){return this.name.match(/]\[label]/)}).attr('name', 'tabs['+tabId+'][fields]['+position+'][label]');parent.find('.b-field').eq(position).find('input').filter(function(){return this.name.match(/]\[description]/)}).attr('name', 'tabs['+tabId+'][fields]['+position+'][description]');parent.find('.b-field').eq(position).find('select').filter(function(){return this.name.match(/]\[type]/)}).attr('name', 'tabs['+tabId+'][fields]['+position+'][type]')})});$(selector).submit()}
     </script>
     <style>
-        #copyright{position:fixed;bottom:0;right:0;background-color:#0057b8;padding:3px 7px;border-radius:5px;}
-        #copyright img{width:9em;}
-        .alertify .ajs-footer .ajs-buttons .ajs-button.ajs-ok {color:#fff;background-color:#d9534f;border-color:#d9534f;}
-        .builder .row{display:flex;flex-wrap:wrap;margin-left:-.25rem;margin-right:-.25rem;cursor:default}
         .builder .row::after{display:none}
         .builder .row.col{align-content:flex-start;margin:0 0 .25rem;padding:0 .25rem 0 0}
         .builder .col-4, .builder .col-8, .builder .col-12, .builder .col, .builder .col-auto{position:relative;width:100%;min-height:0;padding-left:.25rem;padding-right:.25rem}
@@ -220,11 +219,11 @@
     <div id="newField" style="display:none">
         <div class="col-12 b-field b-item">
             <div class="row align-items-center">
-                <div class="col-auto"><i class="fa fa-bars b-move"></i></div>
+                <div class="col-auto"><i class="fa fa-sort b-move"></i></div>
                 <div class="col"></div>
                 <div class="col-auto"><span class="badge badge-warning">{{sSettings::listType()['text']}}</span></div>
                 <div class="col-auto" onclick="onSettings($(this))"><i class="fa fa-cog b-btn-settings"></i></div>
-                <div class="col-auto" onclick="onDeleteField($(this))"><i class="fa fa-minus-circle text-danger b-btn-del"></i></div>
+                <div class="col-auto" onclick="onDeleteField($(this))"><i title="@lang('global.remove')" class="fa fa-minus-circle text-danger b-btn-del"></i></div>
             </div>
             <div class="row col b-field-settings b-settings nu-context-menu">
                 <div class="row b-settings-header">
@@ -266,5 +265,5 @@
             </div>
         </div>
     </div>
-    <div id="copyright"><a href="https://seigerit.com/" target="_blank"><img src="{{evo()->getConfig('site_url', '/')}}assets/site/seigerit-yellow.svg"/></a></div>
+    <div id="copyright"><a href="https://seigerit.com/" target="_blank"><img src="{{evo()->getConfig('site_url', '/')}}assets/site/seigerit-blue.svg"/></a></div>
 @endpush
