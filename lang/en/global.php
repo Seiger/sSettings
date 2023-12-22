@@ -22,6 +22,7 @@
     'field_key' => 'Field Key',
     'field_label' => 'Field Name',
     'field_type' => 'Field Type',
+    'finish_configuring' => 'Finish configuring the module according to the <strong><a href="https://github.com/Seiger/sSettings" target="_blank">instructions</a></strong>.',
     'icon' => 'fa fas fa-cog',
     'instagram_description' => 'Link to Instagram page',
     'instagram' => 'Instagram',

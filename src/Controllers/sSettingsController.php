@@ -30,16 +30,15 @@ class sSettingsController
      */
     public function index(): View
     {
-        // TODO Refactor after some times
-        if (file_exists(EVO_CORE_PATH . 'custom/config/cms/settings/sSettings.php')) {
-            copy(EVO_CORE_PATH . 'custom/config/cms/settings/sSettings.php', EVO_CORE_PATH . 'custom/config/seiger/settings/sSettings.php');
-            unlink(EVO_CORE_PATH . 'custom/config/cms/settings/sSettings.php');
+        if (!file_exists(EVO_CORE_PATH . 'custom/config/seiger/settings/sSettings.php')) {
+            evo()->webAlertAndQuit(__('sSettings::global.finish_configuring'), "index.php?a=2");
         }
 
         $tabs = require EVO_CORE_PATH . 'custom/config/seiger/settings/sSettings.php';
         if (!$tabs) {
             $tabs = ["basicTab"=>["label"=>"","fields"=>[]]];
         }
+
         return $this->view('index', ['tabs' => $tabs]);
     }
 

@@ -22,6 +22,7 @@
     'field_key' => 'Ключ поля',
     'field_label' => 'Назва поля',
     'field_type' => 'Тип поля',
+    'finish_configuring' => 'Завершіть налаштування модуля згідно <strong><a href="https://github.com/Seiger/sSettings" target="_blank">інструкції</a></strong>.',
     'icon' => 'fa fas fa-cog',
     'instagram_description' => 'Посилання на сторінку в Інстаграм',
     'instagram' => 'Інстаграм',
