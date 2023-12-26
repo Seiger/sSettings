@@ -7,6 +7,8 @@ permalink: /use-in-blade/
 
 You can use your parameters in the Blade template in the same way as the Evo kernel system variables.
 
+All variables are prefixed with ```sset_```.
+
 ## Show phone number
 
 ```php
