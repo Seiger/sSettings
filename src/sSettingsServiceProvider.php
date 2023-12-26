@@ -22,7 +22,7 @@ class sSettingsServiceProvider extends ServiceProvider
             // MultiLang
             $this->loadTranslationsFrom(dirname(__DIR__) . '/lang', 'sSettings');
 
-            // For use config
+            // Files
             $this->publishes([
                 dirname(__DIR__) . '/config/sSettingsAlias.php' => config_path('app/aliases/sSettings.php', true),
                 dirname(__DIR__) . '/config/sSettingsSettings.php' => config_path('seiger/settings/sSettings.php', true),
@@ -30,6 +30,10 @@ class sSettingsServiceProvider extends ServiceProvider
             ]);
         }
 
+        // Check sMultisite
+        $this->mergeConfigFrom(dirname(__DIR__) . '/config/sSettingsCheck.php', 'cms.settings');
+
+        // Class alias
         $this->app->singleton(sSettings::class);
         $this->app->alias(sSettings::class, 'sSettings');
     }
