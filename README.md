@@ -28,4 +28,4 @@ php artisan package:installrequire seiger/ssettings "*"
 php artisan vendor:publish --provider="Seiger\sSettings\sSettingsServiceProvider"
 ```
 
-[See full documentation here](https://seiger.github.io/ssettings/)
+[See full documentation here](https://seiger.github.io/sSettings/)
