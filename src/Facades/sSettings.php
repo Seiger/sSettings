@@ -2,6 +2,12 @@
 
 use Illuminate\Support\Facades\Facade;
 
+/**
+ * Class sSettings
+ *
+ * @package Seiger\sSettings
+ * @mixin \Seiger\sSettings\sSettings
+ */
 class sSettings extends Facade
 {
     /**

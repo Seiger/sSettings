@@ -31,7 +31,7 @@ class sSettings
     }
 
     /**
-     * Get url from route name
+     * Get url from route name with action id
      *
      * @param string $name Route name
      * @return string
@@ -42,6 +42,14 @@ class sSettings
         if (evo()->getConfig('friendly_url_suffix', '') != '/') {
             $route = str_ireplace(evo()->getConfig('friendly_url_suffix', ''), '', route($name));
         }
-        return $route;
+
+        $a = 0;
+        $arr = str_split($name, 1);
+        foreach ($arr as $n) {
+            $a += ord($n);
+        }
+        $a = $a < 999 ? $a + 999 : $a;
+
+        return $route.'?a='.$a;
     }
 }

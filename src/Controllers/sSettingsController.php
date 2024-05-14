@@ -12,17 +12,6 @@ use Psr\Container\NotFoundExceptionInterface;
 
 class sSettingsController
 {
-    //public $url;
-
-    /**
-     * Construct
-     */
-    public function __construct()
-    {
-        //$this->url = $this->moduleUrl();
-        //Paginator::defaultView('pagination');
-    }
-
     /**
      * Show tabs with custom system settings
      *
