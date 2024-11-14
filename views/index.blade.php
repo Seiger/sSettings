@@ -52,7 +52,7 @@
                 <i class="fa fa-floppy-o"></i>
                 <span>@lang('global.save')</span>
             </a>
-            @if(evo()->hasPermission('settings'))
+            @if(evo()->hasPermission('settings', 'mgr'))
                 <a id="Button4" class="btn btn-warning" href="{{sSettings::route('sSettings.configure')}}">
                     <i class="fa fa-hammer"></i><span>@lang('global.edit_settings')</span>
                 </a>

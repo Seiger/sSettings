@@ -11,24 +11,21 @@ class sSettingsServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        // Only Manager
-        if (IN_MANAGER_MODE) {
-            // Add custom routes for package
-            include(__DIR__.'/Http/routes.php');
+        // Add custom routes for package
+        include(__DIR__.'/Http/routes.php');
 
-            // Views
-            $this->loadViewsFrom(dirname(__DIR__) . '/views', 'sSettings');
+        // Views
+        $this->loadViewsFrom(dirname(__DIR__) . '/views', 'sSettings');
 
-            // MultiLang
-            $this->loadTranslationsFrom(dirname(__DIR__) . '/lang', 'sSettings');
+        // MultiLang
+        $this->loadTranslationsFrom(dirname(__DIR__) . '/lang', 'sSettings');
 
-            // Files
-            $this->publishes([
-                dirname(__DIR__) . '/config/sSettingsAlias.php' => config_path('app/aliases/sSettings.php', true),
-                dirname(__DIR__) . '/config/sSettingsSettings.php' => config_path('seiger/settings/sSettings.php', true),
-                dirname(__DIR__) . '/images/seigerit-blue.svg' => public_path('assets/site/seigerit-blue.svg'),
-            ]);
-        }
+        // Files
+        $this->publishes([
+            dirname(__DIR__) . '/config/sSettingsAlias.php' => config_path('app/aliases/sSettings.php', true),
+            dirname(__DIR__) . '/config/sSettingsSettings.php' => config_path('seiger/settings/sSettings.php', true),
+            dirname(__DIR__) . '/images/seigerit-blue.svg' => public_path('assets/site/seigerit-blue.svg'),
+        ]);
 
         // Check sMultisite
         $this->mergeConfigFrom(dirname(__DIR__) . '/config/sSettingsCheck.php', 'cms.settings');
