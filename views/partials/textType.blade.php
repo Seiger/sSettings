@@ -5,7 +5,7 @@
         @else
             <span>@lang('sSettings::global.no_title')</span>
         @endif
-        <small class="form-text text-muted">[(sset_{{$field['name']}})]</small>
+        <small class="form-text text-muted">@{{evo()->getConfig('sset_{!!$field['name']!!}', '')}}</small>
     </label>
     <div class="col-7 col-md-9 col-lg-10">
         <input class="form-control" type="text" id="{{$field['name']}}" name="sset_{{$field['name']}}" value="{{evo()->getConfig('sset_'.$field['name'], '')}}" onchange="documentDirty=true;" maxlength="255">

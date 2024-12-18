@@ -9,6 +9,7 @@ class sSettings
 {
     const TYPE_TEXT = 'Text';
     const TYPE_TEXTAREA = 'Textarea';
+    const TYPE_TEXTAREA_MINI = 'TextareaMini';
     const TYPE_IMAGE = 'Image';
     const TYPE_CHECKBOX = 'Checkbox';
 

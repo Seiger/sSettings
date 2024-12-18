@@ -8,7 +8,7 @@
         <small class="form-text text-muted">@{!!evo()->getConfig('sset_{{$field['name']}}', '')!!}</small>
     </label>
     <div class="col-7 col-md-9 col-lg-10">
-        <textarea class="form-control" id="{{$field['name']}}" name="sset_{{$field['name']}}" cols="30" rows="10" onchange="documentDirty=true;">{{evo()->getConfig('sset_'.$field['name'], '')}}</textarea>
+        <textarea class="form-control" id="{{$field['name']}}" name="sset_{{$field['name']}}" cols="30" rows="3" onchange="documentDirty=true;">{{evo()->getConfig('sset_'.$field['name'], '')}}</textarea>
         <small class="form-text text-muted">@lang($field['description'])</small>
     </div>
 </div>
