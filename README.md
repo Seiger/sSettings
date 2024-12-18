@@ -25,6 +25,7 @@ control and flexibility with **sSettings**.
 - [x] Image field type.
 - [x] Text field type.
 - [x] Textarea field type.
+- [x] TextareaMini field type.
 
 ## Install by artisan package installer
 

@@ -26,7 +26,7 @@ website administrator, this plugin offers an intuitive interface for configuring
 website's settings to align precisely with your vision. Experience the next level of
 control and flexibility with **sSettings**.
 
-[Getting Started]({{ site.baseurl }}/getting-started/){: .btn .btn-sky}
+[Getting Started]({{site.baseurl}}/getting-started/){: .btn .btn-sky}
 
 ## Features
 
@@ -34,7 +34,8 @@ control and flexibility with **sSettings**.
 - [x] Image field type.
 - [x] Text field type.
 - [x] Textarea field type.
+- [x] TextareaMini field type.
 
 ## Support
 
-If you need help, please don't hesitate to [open an issue]({{ site.support }}).
+If you need help, please don't hesitate to [open an issue]({{site.support}}).
