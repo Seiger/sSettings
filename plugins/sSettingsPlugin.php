@@ -13,7 +13,7 @@ Event::listen('evolution.OnManagerMenuPrerender', function($params) {
     $menu['ssettings'] = [
         'ssettings',
         'tools',
-        '<i class="'.__('sSettings::global.icon').'"></i><span class="menu-item-text">'.__('sSettings::global.title').'</span>',
+        '<i class="'.__('sSettings::global.icon').'"></i>'.__('sSettings::global.title'),
         sSettings::route('sSettings.index'),
         __('sSettings::global.title'),
         "",
