@@ -12,6 +12,7 @@ class sSettings
     const TYPE_TEXTAREA_MINI = 'TextareaMini';
     const TYPE_IMAGE = 'Image';
     const TYPE_CHECKBOX = 'Checkbox';
+    const TYPE_FILE = 'File';
 
     /**
      * Return list of type fields and labels

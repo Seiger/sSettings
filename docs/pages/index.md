@@ -31,6 +31,7 @@ control and flexibility with **sSettings**.
 ## Features
 
 - [x] Checkbox field type.
+- [x] File field type.
 - [x] Image field type.
 - [x] Text field type.
 - [x] Textarea field type.
