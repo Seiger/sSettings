@@ -13,6 +13,7 @@ class sSettings
     const TYPE_IMAGE = 'Image';
     const TYPE_CHECKBOX = 'Checkbox';
     const TYPE_FILE = 'File';
+    const TYPE_DIVIDER = 'Divider';
 
     /**
      * Return list of type fields and labels

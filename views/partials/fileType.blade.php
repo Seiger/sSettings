@@ -19,3 +19,4 @@
         <small class="form-text text-muted">@lang($field['description'])</small>
     </div>
 </div>
+<div class="split my-1"></div>

@@ -74,4 +74,8 @@
     .darkness .builder .b-resize{background-color:#ffd700}
     .darkness .builder .row-col-wrap:hover .b-resize{background-color:#65686d}
     .sbuttons-wraper{position:sticky;top:5px;text-align:center;}
+    .ui-divider{display:flex;align-items:center;gap:.75rem;margin:.75rem 0;font-size:1rem;font-weight:500;line-height:1.2;color:#495057;}
+    .ui-divider__text{white-space:nowrap;}
+    .ui-divider::after{content:"";flex:1 1 auto;height:1px;background:#dee2e6;transform:translateY(.05em);}
+    .ui-divider > a, .ui-divider > button{white-space:nowrap;}
 </style>
