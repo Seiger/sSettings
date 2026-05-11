@@ -1,14 +1,7 @@
 <?php namespace Seiger\sSettings\Controllers;
 
-use EvolutionCMS\Facades\UrlProcessor;
-use EvolutionCMS\Models\SystemSetting;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
+use Illuminate\Http\Response;
 use Illuminate\View\View;
-use Psr\Container\ContainerExceptionInterface;
-use Psr\Container\NotFoundExceptionInterface;
 
 class sSettingsController
 {
@@ -19,37 +12,7 @@ class sSettingsController
      */
     public function index(): View
     {
-        $GLOBALS['SystemAlertMsgQueque'] = &$_SESSION['SystemAlertMsgQueque'];
-        if (!file_exists(EVO_CORE_PATH . 'custom/config/seiger/settings/sSettings.php')) {
-            evo()->webAlertAndQuit(__('sSettings::global.finish_configuring'), "index.php?a=2");
-        }
-
-        $tabs = require EVO_CORE_PATH . 'custom/config/seiger/settings/sSettings.php';
-        if (!$tabs) {
-            $tabs = ["basicTab" => ["label" => "", "fields" => []]];
-        }
-
-        return $this->view('index', ['tabs' => $tabs]);
-    }
-
-    public function updateSettings()
-    {
-        $settings = request()->all();
-        if ($settings && is_array($settings) && count($settings)) {
-            foreach ($_POST as $key => $value) {
-                if (str_starts_with($key, 'sset_') && is_scalar($value)) {
-                    $setting = SystemSetting::whereSettingName($key)->firstOrCreate();
-                    $setting->setting_name = $key;
-                    $setting->setting_value = $value;
-                    $setting->save();
-                    evo()->setConfig($key, $value);
-                }
-            }
-
-            evo()->clearCache('full');
-        }
-
-        return redirect()->back();
+        return $this->view('index', ['activeTab' => (string) request()->get('tab', 'settings')]);
     }
 
     /**
@@ -59,138 +22,34 @@ class sSettingsController
      */
     public function configure(): View
     {
-        $GLOBALS['SystemAlertMsgQueque'] = &$_SESSION['SystemAlertMsgQueque'];
-        $tabs = require EVO_CORE_PATH . 'custom/config/seiger/settings/sSettings.php';
-        if (!$tabs) {
-            $tabs = ["basicTab" => ["label" => "", "fields" => []]];
+        if (!evo()->hasPermission('settings', 'mgr')) {
+            evo()->webAlertAndQuit(__('global.access_permission_denied'), "index.php?a=2");
         }
-        return $this->view('configure', ['tabs' => $tabs]);
+
+        return $this->view('index', ['activeTab' => 'configure']);
     }
 
     /**
-     * Update settings configuration
+     * Serve manager assets from the package during symlinked local development.
      *
-     * @return \Illuminate\Http\RedirectResponse
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
+     * @param string $file
+     * @return Response
      */
-    public function updateConfigure()
+    public function asset(string $file): Response
     {
-        $tabs = request()->get('tabs');
-        if ($tabs && is_array($tabs) && count($tabs)) {
-            $lang = include_once dirname(__DIR__) . '/../lang/' . evo()->getLocale() . '/global.php';
-            if ($lang && is_array($lang) && count($lang)) {
-                $lang = array_flip($lang);
-            }
-
-            $i = 1;
-            $presentSettings = [];
-
-            $string = '<?php return [' . "\n";
-
-            foreach ($tabs as $key => $tab) {
-                // Tab key
-                if (Str::of($key)->startsWith('tabId')) {
-                    continue;
-                } elseif (Str::of($key)->startsWith('newTab')) {
-                    if (isset($tab['label']) && trim($tab['label'])) {
-                        $key = Str::slug($tab['label'], '_', 'en');
-                    } else {
-                        $key = 'newTab' . $i;
-                    }
-                }
-                $string .= "\t" . '"' . $key . '" => [' . "\n";
-
-                // Tab label
-                $tabLabel = '"label" => "",';
-                if (isset($tab['label']) && trim($tab['label'])) {
-                    if (isset($lang[$tab['label']])) {
-                        $tabLabel = '"label" => "sSettings::global.' . $lang[$tab['label']] . '",';
-                    } else {
-                        $tabLabel = '"label" => "' . $tab['label'] . '",';
-                    }
-                }
-                $string .= "\t\t" . $tabLabel . "\n";
-
-                // Tab fields
-                $string .= "\t\t" . '"fields" => [' . "\n";
-                if ($tab['fields'] && is_array($tab['fields']) && count($tab['fields'])) {
-                    foreach ($tab['fields'] as $field) {
-                        if (isset($field['name']) && trim($field['name'])) {
-                            $string .= "\t\t\t" . '[' . "\n";
-
-                            // Field name
-                            $string .= "\t\t\t\t" . '"name" => "' . Str::slug($field['name'], '_', 'en') . '",' . "\n";
-                            $presentSettings[] = 'sset_' . Str::slug($field['name'], '_', 'en');
-
-                            // Field label
-                            $fieldLabel = '"label" => "",';
-                            if (isset($field['label']) && trim($field['label'])) {
-                                if (isset($lang[$field['label']])) {
-                                    $fieldLabel = '"label" => "sSettings::global.' . $lang[$field['label']] . '",';
-                                } else {
-                                    $fieldLabel = '"label" => "' . $field['label'] . '",';
-                                }
-                            }
-                            $string .= "\t\t\t\t" . $fieldLabel . "\n";
-
-                            // Field description
-                            $fieldDescription = '"description" => "",';
-                            if (isset($field['description']) && trim($field['description'])) {
-                                if (isset($lang[$field['description']])) {
-                                    $fieldDescription = '"description" => "sSettings::global.' . $lang[$field['description']] . '",';
-                                } else {
-                                    $fieldDescription = '"description" => "' . $field['description'] . '",';
-                                }
-                            }
-                            $string .= "\t\t\t\t" . $fieldDescription . "\n";
-
-                            // Field type
-                            $fieldType = '"type" => "text",';
-                            if (isset($field['type']) && trim($field['type'])) {
-                                $fieldType = '"type" => "' . Str::slug($field['type'], '', 'en') . '",';
-                            }
-                            $string .= "\t\t\t\t" . $fieldType . "\n";
-
-                            $string .= "\t\t\t" . '],' . "\n";
-                        }
-                    }
-                }
-                $string .= "\t\t" . ']' . "\n";
-
-                // Tab key close
-                $string .= "\t" . '],' . "\n";
-            }
-            $string .= '];';
-
-            // Save config
-            $handle = fopen(EVO_CORE_PATH . 'custom/config/seiger/settings/sSettings.php', "w");
-            fwrite($handle, $string);
-            fclose($handle);
-
-            // Synchronize system settings
-            $allSettings = SystemSetting::where('setting_name', 'like', 'sset_%')->get()->pluck('setting_name')->toArray();
-
-            $deleteSettings = array_diff($allSettings, $presentSettings);
-            if (count($deleteSettings)) {
-                foreach ($deleteSettings as $deleteSetting) {
-                    SystemSetting::whereSettingName($deleteSetting)->delete();
-                }
-            }
-
-            $addSettings = array_diff($presentSettings, $allSettings);
-            if (count($addSettings)) {
-                foreach ($addSettings as $addSetting) {
-                    $setting = SystemSetting::whereSettingName($addSetting)->firstOrCreate();
-                    $setting->setting_name = $addSetting;
-                    $setting->save();
-                }
-            }
-
-            evo()->clearCache('full');
+        if ($file !== 'ssettings.css') {
+            abort(404);
         }
 
-        return redirect()->back();
+        $path = dirname(__DIR__, 2) . '/assets/' . $file;
+        if (!is_file($path)) {
+            abort(404);
+        }
+
+        return response((string) file_get_contents($path), 200, [
+            'Content-Type' => 'text/css; charset=UTF-8',
+            'Cache-Control' => 'public, max-age=3600',
+        ]);
     }
 
     /**
@@ -202,6 +61,8 @@ class sSettingsController
      */
     public function view(string $tpl, array $data = []): View
     {
+        $data['sSettingsAssetVersion'] = filemtime(dirname(__DIR__, 2) . '/assets/ssettings.css');
+
         return \View::make('sSettings::'.$tpl, $data);
     }
 }

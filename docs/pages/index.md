@@ -26,7 +26,7 @@ website administrator, this plugin offers an intuitive interface for configuring
 website's settings to align precisely with your vision. Experience the next level of
 control and flexibility with **sSettings**.
 
-[Getting Started]({{site.baseurl}}/getting-started/){: .btn .btn-sky}
+[Getting Started](getting-started.md){: .btn .btn-sky}
 
 ## Features
 
@@ -39,4 +39,4 @@ control and flexibility with **sSettings**.
 
 ## Support
 
-If you need help, please don't hesitate to [open an issue]({{site.support}}).
+If you need help, please don't hesitate to [open an issue](https://github.com/Seiger/sSettings/issues).

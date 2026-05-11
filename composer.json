@@ -1,7 +1,7 @@
 {
     "name": "seiger/ssettings",
-    "license": "GPL-3.0",
-    "type": "EvolutionCMS-Plugin",
+    "license": "GPL-3.0-or-later",
+    "type": "evolutioncms-plugin",
     "description": "Evocms package for work with Advanced settings for your website.",
     "keywords": ["evocms", "evolution-cms", "settings"],
     "authors": [
@@ -11,7 +11,8 @@
         }
     ],
     "require": {
-        "php": "^8"
+        "php": "^8",
+        "evolution-cms/evo-ui": "^1.0.1"
     },
     "autoload": {
         "psr-4": {
@@ -29,6 +30,7 @@
         }
     },
     "scripts": {
+        "test": "php tests/run.php",
         "post-autoload-dump": []
     }
 }

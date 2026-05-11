@@ -24,6 +24,9 @@ control and flexibility with **sSettings**.
 - [x] Checkbox field type.
 - [x] File field type.
 - [x] Image field type.
+- [x] Listbox and dropdown option field types.
+- [x] Radio and checkbox group field types.
+- [x] RichText field type.
 - [x] Text field type.
 - [x] Textarea field type.
 - [x] TextareaMini field type.
@@ -46,4 +49,26 @@ php artisan package:installrequire seiger/ssettings "*"
 php artisan vendor:publish --provider="Seiger\sSettings\sSettingsServiceProvider"
 ```
 
-[See full documentation here](https://seiger.github.io/sSettings/)
+## Documentation
+
+File-first dDocs documentation lives in `docs/`:
+
+- [English](docs/en/README.md)
+- [Ukrainian](docs/ua/README.md)
+- [Polish](docs/pl/README.md)
+- [German](docs/de/README.md)
+- [French](docs/fr/README.md)
+
+Legacy public-site documentation is still available at
+[seiger.github.io/sSettings](https://seiger.github.io/sSettings/).
+
+## Release Checks
+
+Run the release gate from the package root before tagging or committing a
+manager UI release:
+
+```console
+composer validate --strict --no-check-publish
+composer test
+php tests/run.php
+```
