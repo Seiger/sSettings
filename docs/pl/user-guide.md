@@ -31,12 +31,19 @@ Opis wyjaśnia, gdzie wartość jest używana na stronie. Po zmianach kliknij
 | Text | Krótkie wartości, takie jak email, telefon, URL lub ID. |
 | Textarea | Dłuższy tekst, HTML lub skrypty śledzenia. |
 | TextareaMini | Krótkie wartości wielowierszowe. |
+| RichText | Formatowana tresc w manager rich editor. |
+| DropDown List Menu | Jedna wartosc z kompaktowej listy dropdown. |
+| Listbox | Jedna albo wiele wartosci z wyzszej listy. |
+| Radio Options | Jedna wartosc z widocznych opcji. |
+| Checkbox Group | Wiele wartosci z widocznych opcji. |
 | Image | Ścieżka obrazu wybrana przez helper managera. |
 | File | Ścieżka pliku wybrana przez helper managera. |
 | Checkbox | Flaga włączone lub wyłączone. |
 | Divider | Separator wizualny; nie zapisuje wartości. |
 
-Checkbox jest zapisywany jako `1` albo `0`.
+Checkbox jest zapisywany jako `1` albo `0`. Pola z opcjami uzywaja wierszy
+value/label. Plus dodaje opcje po aktualnym wierszu, kosz usuwa, strzalki
+sortuja recznie, a drag handle zmienia kolejnosc listy.
 
 ## Ekran konfiguracji
 
@@ -62,8 +69,9 @@ Kliknij ikonę ustawień pola, aby otworzyć kompaktowe okno modalne.
 
 ## Zmiana kolejności
 
-Użyj uchwytu przeciągania, aby zmienić kolejność zakładek lub pól. Pola są
-przenoszone wewnątrz swojej zakładki.
+Użyj uchwytu przeciągania, aby zmienić kolejność zakładek lub pól. Pola można
+przenosić w zakładce albo między zakładkami. Opcje w modalu pola używają tego
+samego EvoUI drag handle i mają strzałki do precyzyjnego ręcznego sortowania.
 
 ## Klucze systemowe
 

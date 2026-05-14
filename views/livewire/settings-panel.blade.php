@@ -1,12 +1,12 @@
 <form
-    class="evo-ui-form ssettings-form ssettings-form--compact"
+    class="evo-ui-form-surface evo-ui-form-surface--density-compact evo-ui-form-surface--layout-settings"
     x-on:submit.prevent="submitSave()"
     x-data="{
         localDirty: @js($dirty),
         savedClean: @js($saved),
         saving: false,
-        showSavedToast: false,
-        savedToastTimer: null,
+        savedFeedback: false,
+        savedFeedbackTimer: null,
         cleanSnapshot: '',
         suppressDirtyUntil: 0,
         submitSave() {
@@ -51,6 +51,10 @@
             }
 
             this.saving = false;
+            this.savedFeedback = false;
+            if (this.savedFeedbackTimer) {
+                window.clearTimeout(this.savedFeedbackTimer);
+            }
             this.savedClean = false;
             this.$el.setAttribute('data-evo-form-saved', 'false');
 
@@ -64,13 +68,13 @@
             this.forceClean();
             this.savedClean = true;
             this.$el.setAttribute('data-evo-form-saved', 'true');
-            this.showSavedToast = true;
-            if (this.savedToastTimer) {
-                window.clearTimeout(this.savedToastTimer);
+            this.savedFeedback = true;
+            if (this.savedFeedbackTimer) {
+                window.clearTimeout(this.savedFeedbackTimer);
             }
-            this.savedToastTimer = window.setTimeout(() => {
-                this.showSavedToast = false;
-            }, 2400);
+            this.savedFeedbackTimer = window.setTimeout(() => {
+                this.savedFeedback = false;
+            }, 1600);
             this.$nextTick(() => window.setTimeout(() => {
                 this.cleanSnapshot = this.fieldSnapshot();
                 this.forceClean();
@@ -95,44 +99,37 @@
     x-on:input="markDirty()"
     x-on:change="markDirty()"
     x-on:evo-ui:form.saved.window="markSaved()"
-    x-bind:data-evo-form-dirty="localDirty ? 'true' : 'false'"
-    x-bind:data-evo-form-saved="savedClean ? 'true' : 'false'"
     data-evo-form
     data-evo-form-dirty="{{ $dirty ? 'true' : 'false' }}"
     data-evo-form-saved="{{ $saved ? 'true' : 'false' }}"
-    data-ssettings-compact-values
 >
-    <div class="evo-ui-form-heading ssettings-heading ssettings-compact-heading">
+    <div class="evo-ui-form-heading">
         <div></div>
-        <div class="evo-ui-form-toolbar ssettings-toolbar" aria-label="@lang('evo::global.form_actions')">
+        <div class="evo-ui-form-toolbar" aria-label="@lang('evo::global.form_actions')">
             <button
                 class="evo-ui-btn evo-ui-btn--primary evo-ui-btn--filled"
                 type="submit"
-                x-bind:disabled="saving || !localDirty || savedClean"
-                x-bind:class="{ 'is-disabled': saving || !localDirty || savedClean }"
+                x-bind:disabled="(typeof saving !== 'undefined' && saving) || (typeof savedFeedback !== 'undefined' && savedFeedback) || !(typeof localDirty !== 'undefined' && localDirty) || (typeof savedClean !== 'undefined' && savedClean)"
+                x-bind:class="{ 'is-disabled': (typeof saving !== 'undefined' && saving) || (typeof savedFeedback !== 'undefined' && savedFeedback) || !(typeof localDirty !== 'undefined' && localDirty) || (typeof savedClean !== 'undefined' && savedClean), 'is-saved': (typeof savedFeedback !== 'undefined' && savedFeedback) }"
+                x-bind:title="(typeof savedFeedback !== 'undefined' && savedFeedback) ? @js(__('evo::global.form_saved')) : @js(__('evo::global.action_save'))"
+                x-bind:aria-label="(typeof savedFeedback !== 'undefined' && savedFeedback) ? @js(__('evo::global.form_saved')) : @js(__('evo::global.action_save'))"
                 @disabled(!$dirty)
                 wire:loading.attr="disabled"
                 wire:loading.class="is-disabled"
                 wire:target="save"
             >
-                <x-evo::icon name="check" class="evo-ui-btn__icon" />
+                <x-evo::icon name="check" class="evo-ui-btn__icon" x-show="!(typeof savedFeedback !== 'undefined' && savedFeedback)" />
+                <x-evo::icon name="circle-check" class="evo-ui-btn__icon" x-show="typeof savedFeedback !== 'undefined' && savedFeedback" x-cloak />
                 <span class="evo-ui-btn__label">@lang('evo::global.action_save')</span>
             </button>
         </div>
-    </div>
-
-    <div class="evo-ui-save-toast evo-ui-save-toast--success" role="status" aria-live="polite" x-cloak x-show="showSavedToast" x-transition.opacity.duration.150ms>
-        <span class="evo-ui-save-toast__content">
-            <x-evo::icon name="circle-check" />
-            <span>@lang('evo::global.form_saved')</span>
-        </span>
     </div>
 
     @php
         $activeFields = (array) data_get($tabs, $activeTab . '.fields', []);
     @endphp
 
-    <div class="ssettings-compact-values">
+    <div class="evo-ui-settings-values">
         @forelse($activeFields as $field)
             @php
                 $type = $catalog->normalizeType((string) ($field['type'] ?? 'text'));
@@ -146,48 +143,48 @@
             @endphp
 
             @if($type === 'divider')
-                <div class="ssettings-compact-divider">
+                <div class="evo-ui-settings-divider">
                     <span>{{ $label }}</span>
                 </div>
             @else
-                <div class="ssettings-compact-row {{ in_array($type, ['textarea', 'textareamini', 'richtext'], true) ? 'ssettings-compact-row--textarea' : '' }}" data-ssettings-compact-row>
-                    <div class="ssettings-compact-row__meta">
-                        <label class="ssettings-compact-row__label" for="{{ $inputId }}">{{ $label }}</label>
-                        <code class="ssettings-compact-row__usage">{{ $usage }}</code>
+                <div class="evo-ui-settings-row {{ in_array($type, ['textarea', 'textareamini', 'richtext'], true) ? 'evo-ui-settings-row--textarea' : '' }}" data-evo-settings-row>
+                    <div class="evo-ui-settings-row__meta">
+                        <label class="evo-ui-settings-row__label" for="{{ $inputId }}">{{ $label }}</label>
+                        <code class="evo-ui-settings-row__usage">{{ $usage }}</code>
                     </div>
 
-                    <div class="ssettings-compact-row__control">
+                    <div class="evo-ui-settings-row__control">
                         @if($type === 'checkbox')
-                            <label class="ssettings-compact-checkbox">
+                            <label class="evo-ui-checkbox">
                                 <input type="checkbox" wire:model="data.{{ $name }}">
                                 <span>{{ $description ?: $label }}</span>
                             </label>
                         @elseif($type === 'checkboxgroup')
-                            <div class="ssettings-option-stack" id="{{ $inputId }}">
+                            <div class="evo-ui-option-stack" id="{{ $inputId }}">
                                 @forelse($options as $option)
-                                    <label class="ssettings-option-choice">
+                                    <label class="evo-ui-option-choice">
                                         <input type="checkbox" value="{{ $option['value'] }}" wire:model="data.{{ $name }}">
                                         <span>{{ __($option['label']) }}</span>
                                     </label>
                                 @empty
-                                    <span class="ssettings-option-empty">@lang('sSettings::global.no_options')</span>
+                                    <span class="evo-ui-option-empty">@lang('sSettings::global.no_options')</span>
                                 @endforelse
                             </div>
                         @elseif($type === 'radio')
-                            <div class="ssettings-option-stack" id="{{ $inputId }}">
+                            <div class="evo-ui-option-stack" id="{{ $inputId }}">
                                 @forelse($options as $option)
-                                    <label class="ssettings-option-choice">
+                                    <label class="evo-ui-option-choice">
                                         <input type="radio" name="{{ $inputId }}" value="{{ $option['value'] }}" wire:model="data.{{ $name }}">
                                         <span>{{ __($option['label']) }}</span>
                                     </label>
                                 @empty
-                                    <span class="ssettings-option-empty">@lang('sSettings::global.no_options')</span>
+                                    <span class="evo-ui-option-empty">@lang('sSettings::global.no_options')</span>
                                 @endforelse
                             </div>
                         @elseif($type === 'dropdown' || $type === 'listbox')
                             <select
                                 id="{{ $inputId }}"
-                                class="evo-ui-input ssettings-compact-input {{ $type === 'listbox' ? 'ssettings-listbox-input' : '' }}"
+                                class="evo-ui-input {{ $type === 'listbox' ? 'evo-ui-select--listbox' : '' }}"
                                 wire:model="data.{{ $name }}"
                                 @if($type === 'listbox') size="{{ min(max(count($options), 5), 10) }}" @endif
                             >
@@ -199,7 +196,7 @@
                         @elseif($type === 'listboxmultiple')
                             <select
                                 id="{{ $inputId }}"
-                                class="evo-ui-input ssettings-compact-input ssettings-listbox-input"
+                                class="evo-ui-input evo-ui-select--multiple"
                                 wire:model="data.{{ $name }}"
                                 multiple
                                 size="{{ min(max(count($options), 5), 10) }}"
@@ -222,7 +219,7 @@
                             >
                                 <textarea
                                     id="{{ $inputId }}"
-                                    class="evo-ui-input evo-ui-textarea evo-ui-textarea--editor ssettings-compact-input"
+                                    class="evo-ui-input evo-ui-textarea evo-ui-textarea--editor"
                                     rows="7"
                                     data-ssettings-richtext
                                     data-evo-rich-editor
@@ -233,21 +230,21 @@
                         @elseif($type === 'textarea' || $type === 'textareamini')
                             <textarea
                                 id="{{ $inputId }}"
-                                class="evo-ui-input evo-ui-textarea ssettings-compact-input"
+                                class="evo-ui-input evo-ui-textarea"
                                 rows="{{ $type === 'textareamini' ? 2 : 7 }}"
                                 wire:model="data.{{ $name }}"
                             ></textarea>
                         @elseif($type === 'image' || $type === 'file')
-                            <span class="ssettings-media-field">
+                            <span class="evo-ui-media-field">
                                 <input
                                     id="{{ $inputId }}"
-                                    class="evo-ui-input ssettings-compact-input"
+                                    class="evo-ui-input"
                                     type="text"
                                     wire:model="data.{{ $name }}"
                                 >
                                 <button
                                     type="button"
-                                    class="evo-ui-btn ssettings-icon-btn"
+                                    class="evo-ui-btn evo-ui-btn--icon evo-ui-media-field__button"
                                     title="@lang('sSettings::global.select_file')"
                                     aria-label="@lang('sSettings::global.select_file')"
                                     onclick="window.EvoUI?.browseMediaField(@js($inputId), @js($type === 'image' ? 'images' : 'files'))"
@@ -255,20 +252,20 @@
                                     <x-evo::icon :name="$type === 'image' ? 'image' : 'file'" />
                                 </button>
                                 @if($type === 'image' && !empty($data[$name]))
-                                    <span class="ssettings-image-preview" style="background-image: url('{{ str_starts_with((string) $data[$name], 'http') ? $data[$name] : EVO_SITE_URL . ltrim((string) $data[$name], '/') }}')"></span>
+                                    <span class="evo-ui-image-preview" style="background-image: url('{{ str_starts_with((string) $data[$name], 'http') ? $data[$name] : EVO_SITE_URL . ltrim((string) $data[$name], '/') }}')"></span>
                                 @endif
                             </span>
                         @else
                             <input
                                 id="{{ $inputId }}"
-                                class="evo-ui-input ssettings-compact-input"
+                                class="evo-ui-input"
                                 type="{{ in_array($type, ['url', 'email', 'number', 'date'], true) ? $type : 'text' }}"
                                 wire:model="data.{{ $name }}"
                             >
                         @endif
 
                         @if($description && $type !== 'checkbox')
-                            <p class="ssettings-compact-row__description">{{ $description }}</p>
+                            <p class="evo-ui-settings-row__description">{{ $description }}</p>
                         @endif
                     </div>
                 </div>

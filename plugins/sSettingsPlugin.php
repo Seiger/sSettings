@@ -10,12 +10,18 @@ use Illuminate\Support\Facades\Event;
  * Evolution Frame::moduleIconHtml() for tabler-backed modules like sArticles.
  */
 Event::listen('evolution.OnManagerMenuPrerender', function($params) {
-    $title = __('sSettings::global.module_title') !== 'sSettings::global.module_title'
-        ? __('sSettings::global.module_title')
-        : __('sSettings::global.title');
-    $icon = __('sSettings::global.module_icon') !== 'sSettings::global.module_icon'
-        ? __('sSettings::global.module_icon')
-        : __('sSettings::global.icon');
+    $translation = static function (string $key): string {
+        $value = __($key);
+
+        return is_string($value) ? $value : $key;
+    };
+
+    $title = $translation('sSettings::global.module_title') !== 'sSettings::global.module_title'
+        ? $translation('sSettings::global.module_title')
+        : $translation('sSettings::global.title');
+    $icon = $translation('sSettings::global.module_icon') !== 'sSettings::global.module_icon'
+        ? $translation('sSettings::global.module_icon')
+        : $translation('sSettings::global.icon');
     $iconSvg = function_exists('svg') && str_starts_with($icon, 'tabler-')
         ? svg($icon)->toHtml()
         : '<i class="' . $icon . '"></i>';

@@ -4,6 +4,10 @@ use Illuminate\Support\Str;
 use RuntimeException;
 use Throwable;
 
+/**
+ * @phpstan-type SchemaField array{name: string, label: string, description: string, type: string, options?: string}
+ * @phpstan-type SchemaTab array{label: string, fields: list<SchemaField>}
+ */
 final class SettingsSchemaRepository
 {
     public const FILE = 'custom/config/seiger/settings/sSettings.php';
@@ -15,7 +19,11 @@ final class SettingsSchemaRepository
 
     public function path(): string
     {
-        return EVO_CORE_PATH . self::FILE;
+        $corePath = defined('EVO_CORE_PATH')
+            ? (string) constant('EVO_CORE_PATH')
+            : getcwd() . DIRECTORY_SEPARATOR;
+
+        return rtrim($corePath, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . self::FILE;
     }
 
     public function exists(): bool
@@ -30,6 +38,7 @@ final class SettingsSchemaRepository
         return is_file($path) ? is_writable($path) : is_writable(dirname($path));
     }
 
+    /** @return array<string, SchemaTab> */
     public function read(): array
     {
         $path = $this->path();
@@ -47,10 +56,14 @@ final class SettingsSchemaRepository
         return $this->normalize(is_array($schema) ? $schema : []);
     }
 
+    /**
+     * @param array<mixed> $tabs
+     * @return array<string, SchemaTab>
+     */
     public function save(array $tabs): array
     {
         if (!$this->isWritable()) {
-            throw new RuntimeException(__('sSettings::global.not_writable'));
+            throw new RuntimeException($this->translation('sSettings::global.not_writable', 'Settings config is not writable.'));
         }
 
         $schema = $this->normalize($tabs);
@@ -84,6 +97,10 @@ final class SettingsSchemaRepository
         return $schema;
     }
 
+    /**
+     * @param array<mixed> $tabs
+     * @return array<string, SchemaTab>
+     */
     public function normalize(array $tabs): array
     {
         $normalized = [];
@@ -136,12 +153,13 @@ final class SettingsSchemaRepository
         return $normalized !== [] ? $normalized : $this->defaultSchema();
     }
 
+    /** @return array<string, SchemaTab> */
     public function defaultSchema(): array
     {
         $path = dirname(__DIR__, 2) . '/config/sSettingsSettings.php';
         $schema = is_file($path) ? require $path : [];
 
-        return is_array($schema) && $schema !== [] ? $schema : [
+        return is_array($schema) && $schema !== [] ? $this->normalize($schema) : [
             'basicTab' => [
                 'label' => 'sSettings::global.basicTab',
                 'fields' => [],
@@ -165,6 +183,7 @@ final class SettingsSchemaRepository
         return $slug !== '' ? $slug : $fallback;
     }
 
+    /** @param array<string, true> $used */
     protected function uniqueKey(string $key, array &$used): string
     {
         $base = $key !== '' ? $key : 'item';
@@ -193,8 +212,14 @@ final class SettingsSchemaRepository
         }
 
         $base = dirname(__DIR__, 2) . '/lang';
-        $locales = array_values(array_unique([evo()->getLocale(), 'en', 'uk', 'ru', 'fr']));
-        $key = false;
+        $currentLocale = evo()->getLocale();
+        $locales = array_values(array_unique([
+            is_string($currentLocale) && $currentLocale !== '' ? $currentLocale : 'en',
+            'en',
+            'uk',
+            'ru',
+            'fr',
+        ]));
 
         foreach ($locales as $locale) {
             $langPath = $base . '/' . $locale . '/global.php';
@@ -203,12 +228,23 @@ final class SettingsSchemaRepository
             }
 
             $translations = include $langPath;
-            $key = is_array($translations) ? array_search($value, $translations, true) : false;
-            if ($key !== false) {
-                break;
+            if (!is_array($translations)) {
+                continue;
+            }
+
+            $key = array_search($value, $translations, true);
+            if (is_string($key)) {
+                return 'sSettings::global.' . $key;
             }
         }
 
-        return $key ? 'sSettings::global.' . $key : $value;
+        return $value;
+    }
+
+    protected function translation(string $key, string $fallback): string
+    {
+        $value = __($key);
+
+        return is_string($value) ? $value : $fallback;
     }
 }

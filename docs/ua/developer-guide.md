@@ -126,7 +126,20 @@ registration.
 
 - значення згруповані за табами схеми;
 - у Конфігурації додавання таба зліва, збереження справа;
+- Конфігурація працює як staged editor: модалка поля застосовує локальний
+  draft, а основна кнопка «Зберегти» є єдиною дією persistence для схеми;
+- primary action у модалці поля використовує `evo::global.action_apply`,
+  неактивна поки draft не змінено, і після застосування робить Configure dirty;
 - порядок табів і полів змінюється drag handles;
+- опції в модалці поля використовують EvoUI `data-evo-dnd-option-list` і
+  `data-evo-dnd-option-row`; EvoUI володіє pointer reorder path, а option row,
+  handle та inputs лишаються `draggable="false"`, щоб не було race між modal і
+  native DnD; Alpine слухає EvoUI через `evo-ui:dnd-option-changed`, без
+  dotted `x-on` event names;
+- DnD табів і полів Configure слухає EvoUI `evo-ui:form-dirty`, щоб reorder
+  одразу активував головну кнопку «Зберегти» ще до завершення Livewire redraw;
+- після успішного Configure Save подія `ssettings-schema-saved` оновлює
+  верхні settings tabs із нормалізованої схеми без reload сторінки;
 - налаштування поля відкриваються у компактному modal;
 - type chips і system key chips маленькі та theme-aware.
 

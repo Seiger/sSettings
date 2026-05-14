@@ -1,8 +1,16 @@
 <?php namespace Seiger\sSettings\Livewire;
 
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 use Livewire\Component;
+use Livewire\Attributes\On;
 use Seiger\sSettings\Support\SettingsSchemaRepository;
 
+/**
+ * @phpstan-type SchemaField array{name: string, label: string, description: string, type: string, options?: string}
+ * @phpstan-type SchemaTab array{label: string, fields: list<SchemaField>}
+ * @phpstan-type ModuleTab array{key: string, label: string, icon: string, type: string, permission?: string}
+ */
 class ModulePanel extends Component
 {
     public string $activeTab = 'settings';
@@ -27,23 +35,36 @@ class ModulePanel extends Component
         $this->showUnsavedPrompt = false;
     }
 
-    public function render(SettingsSchemaRepository $schema)
+    #[On('ssettings-schema-saved')]
+    public function refreshSchemaTabs(): void
+    {
+        $schema = app(SettingsSchemaRepository::class);
+        $this->activeTab = $this->normalizeActiveTab($this->activeTab, $schema->read());
+    }
+
+    public function render(SettingsSchemaRepository $schema): View|Factory
     {
         $schemaTabs = $schema->read();
         $this->activeTab = $this->normalizeActiveTab($this->activeTab, $schemaTabs);
 
         return view('sSettings::livewire.module-panel', [
             'tabs' => $this->tabs($schemaTabs),
-            'title' => $this->activeTab === 'configure' ? __('global.edit_settings') : __('sSettings::global.title'),
+            'title' => $this->activeTab === 'configure'
+                ? $this->translation('global.edit_settings', 'Edit settings')
+                : $this->translation('sSettings::global.title', 'Settings'),
         ]);
     }
 
+    /**
+     * @param array<string, SchemaTab> $schemaTabs
+     * @return list<ModuleTab>
+     */
     protected function tabs(array $schemaTabs): array
     {
         $tabs = [];
 
         foreach ($schemaTabs as $key => $tab) {
-            $label = trim((string) __($tab['label'] ?: 'sSettings::global.no_title'));
+            $label = trim($this->translation($tab['label'] ?: 'sSettings::global.no_title', $tab['label'] ?: 'No title'));
             $tabs[] = [
                 'key' => (string) $key,
                 'label' => $label,
@@ -54,7 +75,7 @@ class ModulePanel extends Component
 
         $tabs[] = [
             'key' => 'configure',
-            'label' => __('global.edit_settings'),
+            'label' => $this->translation('global.edit_settings', 'Edit settings'),
             'icon' => 'settings',
             'permission' => 'settings',
             'type' => 'configure',
@@ -63,6 +84,7 @@ class ModulePanel extends Component
         return $tabs;
     }
 
+    /** @param array<string, SchemaTab> $schemaTabs */
     protected function normalizeActiveTab(string $activeTab, array $schemaTabs): string
     {
         if ($activeTab === 'configure') {
@@ -74,5 +96,12 @@ class ModulePanel extends Component
         }
 
         return $activeTab;
+    }
+
+    protected function translation(string $key, string $fallback): string
+    {
+        $value = __($key);
+
+        return is_string($value) ? $value : $fallback;
     }
 }

@@ -1,13 +1,24 @@
 <?php namespace Seiger\sSettings\Livewire;
 
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 use Livewire\Component;
 use Seiger\sSettings\Support\FieldCatalog;
 use Seiger\sSettings\Support\SettingsSchemaRepository;
 use Seiger\sSettings\Support\SystemSettingsStore;
 
+/**
+ * @phpstan-type OptionRow array{value: string, label: string}
+ * @phpstan-type FieldRow array<string, mixed>
+ * @phpstan-type TabRow array<string, mixed>
+ * @phpstan-type SchemaField array{name: string, label: string, description: string, type: string, options?: string}
+ * @phpstan-type SchemaTab array{label: string, fields: list<SchemaField>}
+ */
 class ConfigurePanel extends Component
 {
+    /** @var array<int, TabRow> */
     public array $tabs = [];
+    /** @var array<int, TabRow> */
     public array $cleanTabs = [];
     public bool $dirty = false;
     public bool $saved = false;
@@ -46,6 +57,7 @@ class ConfigurePanel extends Component
 
         array_splice($this->tabs, max(0, $index + 1), 0, [$tab]);
         $this->updatedTabs();
+        $this->dispatch('evo-ui:inline-create.created', root: 'ssettings-configure', id: $tab['_uid'], uid: $tab['_uid']);
     }
 
     public function removeTab(int $index): void
@@ -95,6 +107,7 @@ class ConfigurePanel extends Component
         $this->openFieldUid = $field['_uid'];
         array_splice($this->tabs[$tabIndex]['fields'], max(0, $fieldIndex + 1), 0, [$field]);
         $this->updatedTabs();
+        $this->dispatch('evo-ui:inline-create.created', root: 'ssettings-configure', id: $field['_uid'], uid: $field['_uid']);
     }
 
     public function commitFieldEdit(): void
@@ -121,6 +134,7 @@ class ConfigurePanel extends Component
         }
     }
 
+    /** @param array<mixed> $options */
     public function updateFieldByUid(string $fieldUid, string $name, string $label, string $description, string $type, array $options = []): void
     {
         $catalog = app(FieldCatalog::class);
@@ -224,6 +238,7 @@ class ConfigurePanel extends Component
         $this->updatedTabs();
     }
 
+    /** @param list<string> $uids */
     public function sortTabs(array $uids): void
     {
         $this->tabs = $this->sortByUid($this->tabs, $uids);
@@ -246,6 +261,7 @@ class ConfigurePanel extends Component
         $this->updatedTabs();
     }
 
+    /** @param list<string> $uids */
     public function sortFields(string $tabUid, array $uids): void
     {
         foreach ($this->tabs as $tabIndex => $tab) {
@@ -259,6 +275,7 @@ class ConfigurePanel extends Component
         }
     }
 
+    /** @param array<string, list<string>> $tabFields */
     public function sortAllFields(array $tabFields): void
     {
         $fieldsByUid = [];
@@ -346,7 +363,8 @@ class ConfigurePanel extends Component
     public function save(SettingsSchemaRepository $schema, SystemSettingsStore $store): bool
     {
         if (!evo()->hasPermission('settings', 'mgr')) {
-            $this->error = __('global.access_permission_denied');
+            $message = __('global.access_permission_denied');
+            $this->error = is_string($message) ? $message : 'Access permission denied.';
             return false;
         }
 
@@ -360,6 +378,7 @@ class ConfigurePanel extends Component
             $this->fillDataFromSchema($normalized);
             $this->saved = true;
             $this->dirty = false;
+            $this->dispatch('ssettings-schema-saved');
             $this->dispatch('evo-ui:form.saved', preset: 'ssettings.configure');
             return true;
         } catch (\Throwable $exception) {
@@ -368,7 +387,7 @@ class ConfigurePanel extends Component
         }
     }
 
-    public function render(FieldCatalog $catalog)
+    public function render(FieldCatalog $catalog): View|Factory
     {
         return view('sSettings::livewire.configure-panel', [
             'types' => $catalog->all(),
@@ -383,6 +402,7 @@ class ConfigurePanel extends Component
         $this->fillDataFromSchema($schema->read());
     }
 
+    /** @param array<string, SchemaTab> $schema */
     protected function fillDataFromSchema(array $schema): void
     {
         $previousTabs = array_values($this->tabs);
@@ -428,24 +448,43 @@ class ConfigurePanel extends Component
         $this->dirty = false;
     }
 
+    /** @return list<array{key: string, label: string, fields: list<SchemaField>}> */
     protected function toSchema(): array
     {
         $schema = [];
 
         foreach ($this->tabs as $tab) {
+            $fields = [];
+
+            foreach ($tab['fields'] as $field) {
+                $schemaField = [
+                    'name' => (string) ($field['name'] ?? ''),
+                    'label' => (string) ($field['label'] ?? ''),
+                    'description' => (string) ($field['description'] ?? ''),
+                    'type' => (string) ($field['type'] ?? 'text'),
+                ];
+
+                if (isset($field['options'])) {
+                    $schemaField['options'] = (string) $field['options'];
+                }
+
+                $fields[] = $schemaField;
+            }
+
             $schema[] = [
-                'key' => $tab['key'] ?? '',
-                'label' => $tab['label'] ?? '',
-                'fields' => collect((array) ($tab['fields'] ?? []))
-                    ->map(fn (array $field): array => collect($field)->except('_uid')->all())
-                    ->values()
-                    ->all(),
+                'key' => $tab['key'],
+                'label' => $tab['label'],
+                'fields' => $fields,
             ];
         }
 
         return $schema;
     }
 
+    /**
+     * @param array<int, array<string, mixed>> $items
+     * @return array<int, array<string, mixed>>
+     */
     protected function move(array $items, int $index, int $direction): array
     {
         $target = $index + $direction;
@@ -460,6 +499,10 @@ class ConfigurePanel extends Component
         return array_values($items);
     }
 
+    /**
+     * @param array<int, array<string, mixed>> $items
+     * @return array<int, array<string, mixed>>
+     */
     protected function moveTo(array $items, int $from, int $to): array
     {
         if (!isset($items[$from]) || !isset($items[$to]) || $from === $to) {
@@ -473,6 +516,7 @@ class ConfigurePanel extends Component
         return array_values($items);
     }
 
+    /** @return FieldRow */
     protected function pullField(int $tabIndex, int $fieldIndex): array
     {
         $field = $this->tabs[$tabIndex]['fields'][$fieldIndex];
@@ -493,6 +537,7 @@ class ConfigurePanel extends Component
         return null;
     }
 
+    /** @return FieldRow|null */
     protected function pullFieldByUid(string $fieldUid): ?array
     {
         foreach ($this->tabs as $tabIndex => $tab) {
@@ -508,11 +553,16 @@ class ConfigurePanel extends Component
         return null;
     }
 
+    /** @param array<mixed> $data */
     protected function snapshot(array $data): string
     {
         return json_encode($this->snapshotData($data), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?: '';
     }
 
+    /**
+     * @param array<mixed> $data
+     * @return array<mixed>
+     */
     protected function snapshotData(array $data): array
     {
         $snapshot = [];
@@ -528,23 +578,47 @@ class ConfigurePanel extends Component
         return $snapshot;
     }
 
+    /**
+     * @param array<int, array<string, mixed>> $items
+     * @param list<string> $uids
+     * @return array<int, array<string, mixed>>
+     */
     protected function sortByUid(array $items, array $uids): array
     {
         $items = array_values($items);
-        $byUid = collect($items)->keyBy(fn (array $item): string => (string) ($item['_uid'] ?? ''));
+        $byUid = [];
         $sorted = [];
+        $used = [];
+
+        foreach ($items as $item) {
+            $uid = (string) ($item['_uid'] ?? '');
+
+            if ($uid !== '') {
+                $byUid[$uid] = $item;
+            }
+        }
 
         foreach ($uids as $uid) {
             $uid = (string) $uid;
-            if ($uid === '' || !$byUid->has($uid)) {
+            if ($uid === '' || !isset($byUid[$uid])) {
                 continue;
             }
 
-            $sorted[] = $byUid->get($uid);
-            $byUid->forget($uid);
+            $sorted[] = $byUid[$uid];
+            $used[$uid] = true;
         }
 
-        return array_values([...$sorted, ...$byUid->values()->all()]);
+        foreach ($items as $item) {
+            $uid = (string) ($item['_uid'] ?? '');
+
+            if ($uid !== '' && isset($used[$uid])) {
+                continue;
+            }
+
+            $sorted[] = $item;
+        }
+
+        return $sorted;
     }
 
     protected function uid(string $prefix): string
@@ -560,7 +634,7 @@ class ConfigurePanel extends Component
             ->values()
             ->all();
 
-        return $this->nextUnique('new_tab', $used);
+        return $this->nextUnique('new_tab', array_values($used));
     }
 
     protected function uniqueFieldName(): string
@@ -572,9 +646,10 @@ class ConfigurePanel extends Component
             ->values()
             ->all();
 
-        return $this->nextUnique('new_field', $used);
+        return $this->nextUnique('new_field', array_values($used));
     }
 
+    /** @param list<string> $used */
     protected function nextUnique(string $base, array $used): string
     {
         $used = array_flip(array_map('strval', $used));
@@ -594,6 +669,8 @@ class ConfigurePanel extends Component
             return '';
         }
 
-        return (string) __($value);
+        $translated = __($value);
+
+        return is_string($translated) ? $translated : $value;
     }
 }

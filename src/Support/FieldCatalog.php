@@ -2,6 +2,7 @@
 
 final class FieldCatalog
 {
+    /** @var array<string, string> */
     public const TYPES = [
         'text' => 'Text',
         'textarea' => 'Textarea',
@@ -22,6 +23,7 @@ final class FieldCatalog
         'divider' => 'Divider',
     ];
 
+    /** @var list<string> */
     public const OPTION_TYPES = [
         'dropdown',
         'listbox',
@@ -30,16 +32,19 @@ final class FieldCatalog
         'checkboxgroup',
     ];
 
+    /** @var list<string> */
     public const MULTIPLE_VALUE_TYPES = [
         'listboxmultiple',
         'checkboxgroup',
     ];
 
+    /** @return array<string, string> */
     public function all(): array
     {
         return self::TYPES;
     }
 
+    /** @return list<string> */
     public function keys(): array
     {
         return array_keys(self::TYPES);
@@ -98,6 +103,7 @@ final class FieldCatalog
         return $this->normalizeType($type) !== 'divider';
     }
 
+    /** @return list<string> */
     public function optionTypes(): array
     {
         return self::OPTION_TYPES;
@@ -113,6 +119,7 @@ final class FieldCatalog
         return in_array($this->normalizeType($type), self::MULTIPLE_VALUE_TYPES, true);
     }
 
+    /** @return list<array{value: string, label: string}> */
     public function parseOptions(mixed $options): array
     {
         if (is_array($options)) {
@@ -162,6 +169,7 @@ final class FieldCatalog
             ->implode('||');
     }
 
+    /** @return list<string> */
     public function parseMultipleValue(mixed $value): array
     {
         if (is_array($value)) {

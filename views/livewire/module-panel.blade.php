@@ -1,5 +1,5 @@
 <div
-    class="evo-ui-tabs evo-ui-tabs--module ssettings-module"
+    class="evo-ui-tabs evo-ui-tabs--module"
     x-data="{
         activeTab: $wire.entangle('activeTab').live,
         pendingTab: null,

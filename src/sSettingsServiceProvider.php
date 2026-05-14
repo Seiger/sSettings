@@ -31,7 +31,7 @@ class sSettingsServiceProvider extends ServiceProvider
         $this->app->singleton(sSettings::class);
         $this->app->alias(sSettings::class, 'sSettings');
 
-        if (defined('IN_MANAGER_MODE') && IN_MANAGER_MODE) {
+        if ($this->inManagerMode()) {
             $this->bootManager();
         }
     }
@@ -46,14 +46,13 @@ class sSettingsServiceProvider extends ServiceProvider
         // Add plugins to Evo
         $this->loadPluginsFrom($this->root . '/plugins/');
 
-        if (defined('IN_MANAGER_MODE') && IN_MANAGER_MODE) {
+        if ($this->inManagerMode()) {
             $lang = 'en';
             if (isset($_SESSION['mgrUsrConfigSet']['manager_language'])) {
                 $lang = (string) $_SESSION['mgrUsrConfigSet']['manager_language'];
             } elseif (is_file(evo()->getSiteCacheFilePath())) {
                 $siteCache = file_get_contents(evo()->getSiteCacheFilePath());
-                preg_match('@\$c\[\'manager_language\'\]="\w+@i', $siteCache, $matches);
-                if (count($matches)) {
+                if (is_string($siteCache) && preg_match('@\$c\[\'manager_language\'\]="\w+@i', $siteCache, $matches)) {
                     $lang = str_replace('$c[\'manager_language\']="', '', $matches[0]);
                 }
             }
@@ -83,11 +82,15 @@ class sSettingsServiceProvider extends ServiceProvider
             $this->root . '/config/sSettingsAlias.php' => config_path('app/aliases/sSettings.php', true),
             $this->root . '/config/sSettingsSettings.php' => config_path('seiger/settings/sSettings.php', true),
             $this->root . '/images/seigerit-blue.svg' => public_path('assets/site/seigerit-blue.svg'),
-            $this->root . '/assets/ssettings.css' => public_path('assets/modules/ssettings/ssettings.css'),
         ]);
 
         Livewire::component('ssettings.module-panel', \Seiger\sSettings\Livewire\ModulePanel::class);
         Livewire::component('ssettings.settings-panel', \Seiger\sSettings\Livewire\SettingsPanel::class);
         Livewire::component('ssettings.configure-panel', \Seiger\sSettings\Livewire\ConfigurePanel::class);
+    }
+
+    protected function inManagerMode(): bool
+    {
+        return defined('IN_MANAGER_MODE') && (bool) constant('IN_MANAGER_MODE');
     }
 }

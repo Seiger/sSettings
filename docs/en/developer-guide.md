@@ -3,6 +3,7 @@
 ## Architecture
 
 sSettings is an evo-ui + Livewire manager module.
+Composer describes it as an "Evocms package for work with Advanced settings for your website."
 
 Core pieces:
 
@@ -17,6 +18,14 @@ Core pieces:
 - `Seiger\sSettings\Support\SystemSettingsStore` reads and writes `sset_*`
   Evolution system settings.
 - `Seiger\sSettings\Support\FieldCatalog` owns the field type catalog.
+
+Legacy package wiring stays intentionally small:
+
+- `sSettingsController` renders only the manager entrypoint; it no longer serves
+  module-local CSS or JavaScript.
+- `sSettingsAlias` is published only as the optional facade alias binding.
+- `sSettingsCheck` is merged into `cms.settings` for Evolution package checks.
+- All manager UI styling and interaction primitives come from evo-ui assets.
 
 ## Installation
 
@@ -124,7 +133,20 @@ The manager UI should stay compact:
 
 - Settings values are grouped by schema tabs.
 - Configuration has add-tab on the left and save on the right.
+- Configure is a staged editor: field modals apply local draft changes, while
+  the main Configure Save is the only schema persistence action.
+- A field modal primary action uses `evo::global.action_apply`, stays disabled
+  while the modal draft is unchanged, and marks Configure dirty after apply.
 - Tabs and fields use drag handles for reorder.
+- Option rows in field modals use EvoUI `data-evo-dnd-option-list` and
+  `data-evo-dnd-option-row`; EvoUI owns the pointer reorder path, while option
+  rows, handles and inputs stay `draggable="false"` to avoid modal/native DnD
+  timing races. Alpine listens to EvoUI through `evo-ui:dnd-option-changed`;
+  do not use dotted `x-on` event names for this path.
+- Configure tab and field DnD listens to EvoUI `evo-ui:form-dirty` so reorders
+  immediately enable the main Save button before the Livewire redraw completes.
+- After a successful Configure Save, `ssettings-schema-saved` refreshes the
+  top-level settings tabs from the normalized schema without a page reload.
 - Field settings open in a compact modal.
 - Type chips and system key chips are small and theme-aware.
 

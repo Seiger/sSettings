@@ -32,12 +32,20 @@ Sie nach Änderungen auf **Speichern**.
 | Text | Kurze Werte wie E-Mail, Telefon, URL oder ID. |
 | Textarea | Längere Texte, HTML-Fragmente oder Tracking-Skripte. |
 | TextareaMini | Kurze mehrzeilige Werte. |
+| RichText | Formatierter Inhalt im Manager rich editor. |
+| DropDown List Menu | Ein Wert aus einer kompakten Dropdown-Liste. |
+| Listbox | Ein oder mehrere Werte aus einer hoeheren Liste. |
+| Radio Options | Ein Wert aus sichtbaren Optionen. |
+| Checkbox Group | Mehrere Werte aus sichtbaren Optionen. |
 | Image | Bildpfad, ausgewählt über den Manager-Helfer. |
 | File | Dateipfad, ausgewählt über den Manager-Helfer. |
 | Checkbox | Aktiviert oder deaktiviert. |
 | Divider | Visuelle Trennlinie; speichert keinen Wert. |
 
-Checkbox-Werte werden als `1` oder `0` gespeichert.
+Checkbox-Werte werden als `1` oder `0` gespeichert. Option-basierte Felder
+verwenden value/label Zeilen. Plus fuegt eine Option nach der aktuellen Zeile
+ein, der Papierkorb entfernt sie, Pfeile sortieren manuell und der drag handle
+sortiert per DnD.
 
 ## Konfigurationsansicht
 
@@ -67,7 +75,9 @@ Klicken Sie auf das Einstellungssymbol eines Feldes, um das kompakte Modal zu
 ## Reihenfolge ändern
 
 Verwenden Sie den Drag Handle, um Tabs oder Felder neu zu sortieren. Felder
-werden innerhalb ihres aktuellen Tabs verschoben.
+koennen innerhalb eines Tabs oder zwischen Tabs verschoben werden.
+Optionszeilen in Feldmodals nutzen denselben EvoUI drag handle und behalten
+Pfeile fuer praezise manuelle Sortierung.
 
 ## Systemschlüssel
 

@@ -18,7 +18,7 @@ class sSettings
     /**
      * Return list of type fields and labels
      *
-     * @return array
+     * @return array<string, string>
      */
     public function listType(): array
     {

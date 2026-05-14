@@ -1,5 +1,6 @@
 <?php namespace Seiger\sSettings\Support;
 
+use Illuminate\Database\Eloquent\Builder;
 use EvolutionCMS\Models\SystemSetting;
 
 final class SystemSettingsStore
@@ -9,6 +10,10 @@ final class SystemSettingsStore
     ) {
     }
 
+    /**
+     * @param array<string, array<string, mixed>> $schema
+     * @return array<string, mixed>
+     */
     public function values(array $schema): array
     {
         $values = [];
@@ -25,13 +30,17 @@ final class SystemSettingsStore
         return $values;
     }
 
+    /**
+     * @param array<string, array<string, mixed>> $schema
+     * @param array<string, mixed> $values
+     */
     public function saveValues(array $schema, array $values): void
     {
         foreach ($this->fieldDefinitions($schema) as $field) {
             $name = 'sset_' . $field['name'];
             $value = $this->normalizeValue($field, $values[$name] ?? null);
 
-            $setting = SystemSetting::whereSettingName($name)->firstOrCreate();
+            $setting = $this->query()->firstOrCreate(['setting_name' => $name]);
             $setting->setting_name = $name;
             $setting->setting_value = $value;
             $setting->save();
@@ -41,6 +50,9 @@ final class SystemSettingsStore
         evo()->clearCache('full');
     }
 
+    /**
+     * @param array<string, array<string, mixed>> $schema
+     */
     public function syncSchema(array $schema): void
     {
         $owned = collect($this->fieldDefinitions($schema))
@@ -49,18 +61,23 @@ final class SystemSettingsStore
             ->all();
 
         foreach ($owned as $name) {
-            $setting = SystemSetting::whereSettingName($name)->firstOrCreate();
+            $setting = $this->query()->firstOrCreate(['setting_name' => $name]);
             $setting->setting_name = $name;
             $setting->save();
         }
 
-        SystemSetting::where('setting_name', 'like', 'sset_%')
+        $this->query()
+            ->where('setting_name', 'like', 'sset_%')
             ->whereNotIn('setting_name', $owned)
             ->delete();
 
         evo()->clearCache('full');
     }
 
+    /**
+     * @param array<string, array<string, mixed>> $schema
+     * @return array<int, array<string, mixed>>
+     */
     public function fieldDefinitions(array $schema): array
     {
         $fields = [];
@@ -82,6 +99,9 @@ final class SystemSettingsStore
         return $fields;
     }
 
+    /**
+     * @param array<string, mixed> $field
+     */
     protected function defaultValue(array $field): string
     {
         $type = $this->fields->normalizeType((string) ($field['type'] ?? 'text'));
@@ -89,6 +109,9 @@ final class SystemSettingsStore
         return $type === 'checkbox' ? '0' : '';
     }
 
+    /**
+     * @param array<string, mixed> $field
+     */
     protected function normalizeValue(array $field, mixed $value): string
     {
         return match ($this->fields->normalizeType((string) ($field['type'] ?? 'text'))) {
@@ -96,5 +119,13 @@ final class SystemSettingsStore
             'checkboxgroup', 'listboxmultiple' => $this->fields->serializeMultipleValue($value),
             default => is_scalar($value) ? trim((string) $value) : '',
         };
+    }
+
+    /**
+     * @return Builder<SystemSetting>
+     */
+    protected function query(): Builder
+    {
+        return (new SystemSetting())->newQuery();
     }
 }

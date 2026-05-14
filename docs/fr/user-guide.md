@@ -32,12 +32,20 @@ La description indique où la valeur est utilisée sur le site. Cliquez sur
 | Text | Valeurs courtes comme e-mail, téléphone, URL ou ID. |
 | Textarea | Texte long, fragments HTML ou scripts de suivi. |
 | TextareaMini | Valeurs courtes sur plusieurs lignes. |
+| RichText | Contenu formate dans le manager rich editor. |
+| DropDown List Menu | Une valeur choisie dans un dropdown compact. |
+| Listbox | Une ou plusieurs valeurs dans une liste plus haute. |
+| Radio Options | Une valeur parmi des options visibles. |
+| Checkbox Group | Plusieurs valeurs parmi des options visibles. |
 | Image | Chemin d'image choisi via l'aide du manager. |
 | File | Chemin de fichier choisi via l'aide du manager. |
 | Checkbox | Option activée ou désactivée. |
 | Divider | Séparateur visuel; ne stocke pas de valeur. |
 
-Les checkbox sont enregistrées comme `1` ou `0`.
+Les checkbox sont enregistrées comme `1` ou `0`. Les champs avec options
+utilisent des lignes value/label. Le plus ajoute une option apres la ligne
+courante, la corbeille supprime, les fleches reordonnent manuellement et le
+drag handle reordonne la liste.
 
 ## Écran Configuration
 
@@ -65,7 +73,9 @@ Cliquez sur l'icône des paramètres d'un champ pour ouvrir le modal compact.
 ## Réordonner
 
 Utilisez la poignée de déplacement pour réordonner les onglets ou les champs.
-Les champs sont déplacés dans leur onglet actuel.
+Les champs peuvent bouger dans un onglet ou entre onglets. Les options dans une
+modal de champ utilisent le meme EvoUI drag handle et gardent les fleches pour
+un ordre manuel precis.
 
 ## Clés système
 

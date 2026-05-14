@@ -32,12 +32,20 @@ Available field types:
 | Text | Short values such as email, phone, URL, or ID. |
 | Textarea | Large text, HTML snippets, or tracking scripts. |
 | TextareaMini | Short multi-line values. |
+| RichText | Formatted content edited with the manager rich editor. |
+| DropDown List Menu | One value chosen from a compact dropdown list. |
+| Listbox | One or many values selected from a taller list. |
+| Radio Options | One value selected from visible options. |
+| Checkbox Group | Many values selected from visible options. |
 | Image | Image path selected through the manager helper. |
 | File | File path selected through the manager helper. |
 | Checkbox | Enabled or disabled flags. |
 | Divider | A visual separator; it does not store a value. |
 
-Checkbox values are saved as `1` or `0`.
+Checkbox values are saved as `1` or `0`. Option-based fields use value/label
+rows. Use the plus button to add an option after the current row, the trash
+action to remove it, arrows for manual reorder, or the drag handle to reorder
+the option list.
 
 ## Configuration Screen
 
@@ -63,8 +71,9 @@ Click the settings icon on a field to open the compact field settings modal.
 
 ## Reordering
 
-Use the drag handle to reorder tabs or fields. Fields are reordered inside their
-current tab.
+Use the drag handle to reorder tabs or fields. Fields can move inside a tab or
+between tabs. Option rows inside field settings use the same EvoUI drag handle
+and also keep up/down arrows for precise movement.
 
 ## System Keys
 

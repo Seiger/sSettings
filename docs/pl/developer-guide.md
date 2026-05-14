@@ -112,7 +112,20 @@ Interfejs powinien pozostać kompaktowy:
 
 - wartości są grupowane według zakładek schematu;
 - w Konfiguracji dodawanie zakładki jest po lewej, zapis po prawej;
+- Konfiguracja jest staged editor: modal pola stosuje lokalny draft, a glowny
+  przycisk Save jest jedyna akcja persistence dla schematu;
+- primary action w modalu pola uzywa `evo::global.action_apply`, jest wylaczona
+  gdy draft sie nie zmienil i po apply oznacza Configure jako dirty;
 - zakładki i pola zmieniają kolejność przez drag handles;
+- opcje w modalach pol uzywaja EvoUI `data-evo-dnd-option-list` i
+  `data-evo-dnd-option-row`; EvoUI posiada pointer reorder path, a option row,
+  handle i inputy pozostaja `draggable="false"`, zeby uniknac race miedzy
+  modalem i native DnD; Alpine slucha przez `evo-ui:dnd-option-changed`, bez
+  dotted `x-on` event names dla tej sciezki;
+- DnD zakladek i pol Configure slucha EvoUI `evo-ui:form-dirty`, zeby reorder
+  od razu wlaczal glowny przycisk Save przed zakonczeniem redraw Livewire;
+- po udanym Configure Save event `ssettings-schema-saved` odswieza gorne
+  settings tabs z normalizowanego schematu bez reload strony;
 - ustawienia pola otwierają się w kompaktowym modalu;
 - type chips i system key chips są małe i zgodne z motywem.
 

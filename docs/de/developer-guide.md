@@ -115,7 +115,22 @@ Die Oberfläche soll kompakt bleiben:
 
 - Werte sind nach Schema-Tabs gruppiert.
 - In der Konfiguration ist Tab hinzufügen links und Speichern rechts.
+- Configure ist ein staged editor: Feldmodals wenden lokale Draft-Aenderungen
+  an, waehrend der Haupt-Speichern-Button die einzige Schema-Persistenz ist.
+- Die Primaeraktion im Feldmodal nutzt `evo::global.action_apply`, bleibt bei
+  unveraendertem Draft deaktiviert und markiert Configure nach Apply als dirty.
 - Tabs und Felder werden über Drag Handles sortiert.
+- Optionszeilen in Feldmodals verwenden EvoUI `data-evo-dnd-option-list` und
+  `data-evo-dnd-option-row`; EvoUI besitzt den Pointer-Reorder-Pfad, waehrend
+  Optionszeilen, Handles und Inputs `draggable="false"` bleiben, damit kein
+  Modal/native-DnD Timing-Race entsteht. Alpine hoert ueber
+  `evo-ui:dnd-option-changed`; keine dotted `x-on` Event-Namen fuer diesen
+  Pfad verwenden.
+- Configure Tab- und Field-DnD hoert auf EvoUI `evo-ui:form-dirty`, damit
+  Reorder die Haupt-Speichern-Schaltflaeche sofort aktiviert, noch bevor der
+  Livewire-Redraw fertig ist.
+- Nach erfolgreichem Configure Save aktualisiert `ssettings-schema-saved` die
+  oberen Settings-Tabs aus dem normalisierten Schema ohne Reload.
 - Feldeinstellungen öffnen sich in einem kompakten Modal.
 - Type Chips und System Key Chips sind klein und theme-aware.
 

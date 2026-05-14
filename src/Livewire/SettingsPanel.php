@@ -1,14 +1,23 @@
 <?php namespace Seiger\sSettings\Livewire;
 
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 use Livewire\Component;
 use Seiger\sSettings\Support\FieldCatalog;
 use Seiger\sSettings\Support\SettingsSchemaRepository;
 use Seiger\sSettings\Support\SystemSettingsStore;
 
+/**
+ * @phpstan-type SchemaField array{name: string, label: string, description: string, type: string, options?: string}
+ * @phpstan-type SchemaTab array{label: string, fields: list<SchemaField>}
+ */
 class SettingsPanel extends Component
 {
+    /** @var array<string, SchemaTab> */
     public array $schema = [];
+    /** @var array<string, mixed> */
     public array $data = [];
+    /** @var array<string, mixed> */
     public array $cleanData = [];
     public string $activeTab = '';
     public bool $dirty = false;
@@ -43,7 +52,7 @@ class SettingsPanel extends Component
         }
     }
 
-    public function render(FieldCatalog $catalog)
+    public function render(FieldCatalog $catalog): View|Factory
     {
         return view('sSettings::livewire.settings-panel', [
             'catalog' => $catalog,
@@ -62,6 +71,7 @@ class SettingsPanel extends Component
         $this->dirty = false;
     }
 
+    /** @param array<string, mixed> $data */
     protected function snapshot(array $data): string
     {
         ksort($data);

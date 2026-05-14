@@ -117,7 +117,22 @@ L'interface doit rester compacte:
 - les valeurs sont groupées par onglets du schéma;
 - dans Configuration, l'ajout d'onglet est à gauche et l'enregistrement à
   droite;
+- Configuration est un staged editor: les modals de champ appliquent un draft
+  local, et le bouton Save principal est la seule action de persistance schema;
+- l'action primaire du modal de champ utilise `evo::global.action_apply`, reste
+  inactive tant que le draft est propre, puis marque Configure comme dirty;
 - les onglets et champs se réordonnent par poignées de déplacement;
+- les options dans les modals de champ utilisent EvoUI
+  `data-evo-dnd-option-list` et `data-evo-dnd-option-row`; EvoUI possede le
+  chemin pointer reorder, tandis que les lignes, handles et inputs restent
+  `draggable="false"` afin d'eviter les races entre modale et native DnD.
+  Alpine ecoute `evo-ui:dnd-option-changed`; ne pas utiliser de noms
+  d'evenements `x-on` avec des points pour ce chemin;
+- le DnD des onglets et champs Configure ecoute EvoUI `evo-ui:form-dirty` afin
+  d'activer immediatement le bouton Save principal avant la fin du redraw
+  Livewire;
+- apres un Configure Save reussi, `ssettings-schema-saved` rafraichit les
+  settings tabs superieurs depuis le schema normalise sans reload;
 - les paramètres de champ s'ouvrent dans un modal compact;
 - les type chips et system key chips sont petits et compatibles avec le thème.
 

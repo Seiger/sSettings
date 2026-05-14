@@ -21,14 +21,6 @@
     <meta name="robots" content="noindex,nofollow">
     <title>{{ $moduleTitle }}</title>
     @include('evo::partials.assets')
-    <link rel="stylesheet" href="{{ route('sSettings.asset', ['file' => 'ssettings.css']) }}?v={{ $sSettingsAssetVersion }}">
-    <script>
-        window.evo = window.evo || {};
-        window.evo.EVO_MANAGER_URL = @json(EVO_MANAGER_URL);
-        window.evo.config = Object.assign(window.evo.config || {}, {
-            which_browser: @json(evo()->getConfig('which_browser', 'mcpuk'))
-        });
-    </script>
 </head>
 <body
     class="evo-ui-page {{ $themeClasses }}"
