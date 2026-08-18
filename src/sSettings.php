@@ -34,10 +34,14 @@ class sSettings
     }
 
     /**
-     * Get url from route name with action id
+     * Build a manager route URL with its action ID and active CSRF token.
      *
-     * @param string $name Route name
-     * @return string
+     * The generated URL is shared by manager menu links, navigation actions, and form targets.
+     * Authenticated manager requests include the current token so the `mgr` middleware can
+     * validate both GET navigation and POST submissions.
+     *
+     * @param string $name Named sSettings route.
+     * @return string Manager-compatible route URL.
      */
     public function route(string $name): string
     {
@@ -53,6 +57,12 @@ class sSettings
         $a = array_sum(array_map('ord', str_split($name))) + 999;
         $a = $a < 999 ? $a + 999 : $a;
 
-        return $route . '?a=' . $a;
+        $url = $route . '?a=' . $a;
+
+        if (!empty($_SESSION['mgrValidated'])) {
+            $url .= '&_token=' . rawurlencode(csrf_token());
+        }
+
+        return $url;
     }
 }
