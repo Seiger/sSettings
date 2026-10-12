@@ -23,6 +23,20 @@ The Settings screen shows one configuration tab at a time. Each field row has:
 Use the descriptions to understand where a value appears on the site. Press
 **Save** after changing values.
 
+## Multilingual Text Fields
+
+With sLang installed, enable **Multilingual field** in a Text, Textarea, Textarea
+Mini or RichText field's configuration. Settings then displays a separate value
+for each configured sLang language, using keys such as
+`@evoConfig('sset_adv_top_uk')` and
+`@evoConfig('sset_adv_top_en')`.
+
+The initial value is copied to the default language. The unsuffixed key follows
+that language for compatibility. New languages appear automatically; removed
+languages and disabled multilingual fields retain their translated values.
+Without sLang, the field remains usable as a single value. Duplicate generated
+keys are rejected before configuration is saved.
+
 ## Field Types
 
 Available field types:

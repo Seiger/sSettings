@@ -1,5 +1,18 @@
 # Przewodnik użytkownika
 
+## Wielojęzyczne pola tekstowe
+
+Po zainstalowaniu sLang włącz **Pole wielojęzyczne** w konfiguracji Text,
+Textarea, Textarea Mini lub RichText. Każdy język skonfigurowany w sLang otrzyma
+osobną wartość, na przykład `@evoConfig('sset_adv_top_uk')` oraz
+`@evoConfig('sset_adv_top_en')`.
+
+Początkowa wartość jest kopiowana do języka domyślnego. Klucz bez sufiksu
+językowego odzwierciedla tę wartość. Nowe języki pojawiają się automatycznie;
+wartości usuniętych języków są zachowywane także po wyłączeniu wielojęzyczności.
+Bez sLang pole działa z jedną wartością. Konflikty wygenerowanych kluczy
+blokują zapis konfiguracji.
+
 ## Otwieranie sSettings
 
 W managerze Evolution CMS wybierz **Narzędzia -> Ustawienia użytkownika**. Moduł

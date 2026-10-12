@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Event;
 /**
  * Add the Tools menu item while keeping the icon markup identical to
  * Evolution Frame::moduleIconHtml() for tabler-backed modules like sArticles.
+ * Include the current session token because module execution requires CSRF verification.
  */
 Event::listen('evolution.OnManagerMenuPrerender', function($params) {
     $translation = static function (string $key): string {
@@ -31,7 +32,7 @@ Event::listen('evolution.OnManagerMenuPrerender', function($params) {
         'ssettings',
         'tools',
         $iconHtml . $title,
-        'index.php?a=112&id=' . md5($title),
+        'index.php?a=112&id=' . md5($title) . '&_token=' . rawurlencode(csrf_token()),
         $title,
         '',
         '',

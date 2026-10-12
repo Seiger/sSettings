@@ -247,7 +247,9 @@
                             $fieldLabel = trim((string) __($field['label'] ?? ''));
                             $fieldDescription = trim((string) __($field['description'] ?? ''));
                             $fieldType = (string) ($field['type'] ?? 'text');
-                            $fieldUsage = '[(sset_' . $fieldName . ')]';
+                            $fieldUsage = !empty($field['multilingual']) && $catalog->supportsMultilingual($fieldType)
+                                ? '@' . "evoConfig('sset_" . $fieldName . "_' . evo()->getLocale())"
+                                : '@' . "evoConfig('sset_" . $fieldName . "')";
                             $fieldOptions = $catalog->parseOptions($field['options'] ?? '');
                         @endphp
 
@@ -260,6 +262,7 @@
                                 label: @js($fieldLabel),
                                 description: @js($fieldDescription),
                                 type: @js($fieldType),
+                                multilingual: @js(!empty($field['multilingual'])),
                                 optionTypes: @js($optionTypes),
                                 options: @js($fieldOptions),
                                 draftSnapshot: '',
@@ -300,6 +303,7 @@
                                         label: this.label || '',
                                         description: this.description || '',
                                         type: this.type || '',
+                                        multilingual: this.multilingual,
                                         options: this.optionPayload(),
                                     });
                                 },
@@ -355,7 +359,7 @@
                                         return;
                                     }
 
-                                    Promise.resolve(this.$wire.updateFieldByUid(@js($field['_uid'] ?? ''), this.name, this.label, this.description, this.type, this.options))
+                                    Promise.resolve(this.$wire.updateFieldByUid(@js($field['_uid'] ?? ''), this.name, this.label, this.description, this.type, this.options, this.multilingual))
                                         .then(() => {
                                             this.refreshDraftSnapshot();
                                             this.open = false;
@@ -379,15 +383,15 @@
                                 :label="__('sSettings::global.drag_to_reorder')"
                             />
 
-                            <button type="button" class="evo-ui-dnd-summary" x-on:click="open = true">
-                                <span class="evo-ui-dnd-summary__main">
-                                    <span class="evo-ui-dnd-title" data-placeholder="@lang('sSettings::global.field_label')">{{ $fieldLabel }}</span>
-                                    @if($fieldDescription)
-                                        <span class="evo-ui-dnd-subtitle">{{ $fieldDescription }}</span>
-                                    @endif
-                                </span>
-                                <code class="evo-ui-dnd-key">{{ $fieldUsage }}</code>
-                            </button>
+                            <div class="evo-ui-dnd-summary" style="display: flex; flex-direction: column; align-items: stretch;">
+                                <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; min-width: 0;">
+                                    <button type="button" class="evo-ui-dnd-title" style="border: 0; background: transparent; padding: 0; color: inherit; text-align: left; cursor: pointer;" x-on:click="open = true" data-placeholder="@lang('sSettings::global.field_label')">{{ $fieldLabel }}</button>
+                                    @include('sSettings::livewire.config-usage', ['usage' => $fieldUsage, 'usageClass' => 'evo-ui-dnd-key'])
+                                </div>
+                                @if($fieldDescription)
+                                    <button type="button" class="evo-ui-dnd-subtitle" style="width: 100%; border: 0; background: transparent; padding: 0; text-align: left; white-space: normal; overflow-wrap: anywhere; cursor: pointer;" x-on:click="open = true">{{ $fieldDescription }}</button>
+                                @endif
+                            </div>
 
                             <span class="evo-ui-dnd-badge" title="{{ $types[$fieldType] ?? ucfirst($fieldType) }}">{{ $types[$fieldType] ?? ucfirst($fieldType) }}</span>
 
@@ -414,7 +418,7 @@
                                 <section class="evo-ui-modal evo-ui-modal--lg" role="dialog" aria-modal="true" x-on:click.stop>
                                     <header class="evo-ui-modal__header">
                                         <div class="evo-ui-modal__title">
-                                            <code class="evo-ui-dnd-key">{{ $fieldUsage }}</code>
+                                            @include('sSettings::livewire.config-usage', ['usage' => $fieldUsage, 'usageClass' => 'evo-ui-dnd-key'])
                                         </div>
                                         <button type="button" class="evo-ui-modal__close" title="@lang('evo::global.action_cancel')" aria-label="@lang('evo::global.action_cancel')" x-on:click="open = false; $wire.clearOpenField()">
                                             <x-evo::icon name="x" />
@@ -441,6 +445,15 @@
                                                 @endforeach
                                             </select>
                                         </label>
+                                        @if($multilingualAvailable)
+                                            <label class="evo-ui-field evo-ui-field--full" x-show="['text', 'textarea', 'textareamini', 'richtext'].includes(type)" x-cloak>
+                                                <span class="evo-ui-field__label">@lang('sSettings::global.multilingual_field')</span>
+                                                <span class="evo-ui-checkbox">
+                                                    <input type="checkbox" x-model="multilingual">
+                                                </span>
+                                                <span class="evo-ui-field__hint" x-show="multilingual" x-cloak>@lang('sSettings::global.multilingual_field_help')</span>
+                                            </label>
+                                        @endif
                                         <div class="evo-ui-field evo-ui-field--full" x-show="usesOptions()" x-cloak>
                                             <span class="evo-ui-field__label">@lang('sSettings::global.field_options')</span>
                                             <div

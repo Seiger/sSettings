@@ -28,7 +28,7 @@ assertSame(false, $catalog->storesValue('divider'), 'divider value ownership');
 
 $composer = json_decode((string) file_get_contents(dirname(__DIR__) . '/composer.json'), true);
 assertSame('GPL-3.0-or-later', $composer['license'] ?? null, 'composer license uses explicit SPDX expression');
-assertSame('^1.0.1', $composer['require']['evolution-cms/evo-ui'] ?? null, 'composer evo-ui dependency uses release constraint');
+assertSame('^1.3', $composer['require']['evolution-cms/evo-ui'] ?? null, 'composer evo-ui dependency uses release constraint');
 assertSame('php tests/run.php', $composer['scripts']['test'] ?? null, 'composer test script runs the smoke suite');
 
 $readme = (string) file_get_contents(dirname(__DIR__) . '/README.md');

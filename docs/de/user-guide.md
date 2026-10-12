@@ -1,5 +1,19 @@
 # Benutzerhandbuch
 
+## Mehrsprachige Textfelder
+
+Wenn sLang installiert ist, aktivieren Sie **Mehrsprachiges Feld** in der
+Konfiguration von Text, Textarea, Textarea Mini oder RichText. Für jede in sLang
+konfigurierte Sprache erscheint ein eigener Wert, beispielsweise
+`@evoConfig('sset_adv_top_uk')` und
+`@evoConfig('sset_adv_top_en')`.
+
+Der bisherige Wert wird in die Standardsprache übernommen. Der Schlüssel ohne
+Sprachsuffix folgt diesem Wert. Neue Sprachen erscheinen automatisch; Werte
+entfernter Sprachen bleiben auch nach Deaktivierung der Mehrsprachigkeit erhalten.
+Ohne sLang bleibt das Feld einsprachig nutzbar. Konflikte generierter Schlüssel
+verhindern das Speichern der Konfiguration.
+
 ## sSettings öffnen
 
 Öffnen Sie im Evolution CMS Manager **Werkzeuge -> Benutzereinstellungen**. Das

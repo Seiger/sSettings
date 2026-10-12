@@ -1,4 +1,7 @@
 <?php return [
+    'multilingual_field' => 'Multilingual field',
+    'multilingual_field_help' => 'A separate value for each sLang language. Values for removed languages are retained.',
+    'multilingual_key_conflict' => 'A multilingual field key conflicts with another field key. Change the field name.',
     'add_new_field' => 'Add a new field in this tab',
     'add_new_tab' => 'Add new tab',
     'add_tab_after' => 'Add tab after this tab',

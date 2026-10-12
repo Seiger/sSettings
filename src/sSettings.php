@@ -26,7 +26,8 @@ class sSettings
     }
 
     /**
-     * Get url from route name with action id
+     * Build a manager route URL with its action ID and current session token.
+     * Authenticated manager links must pass the core CSRF middleware.
      *
      * @param string $name Route name
      * @return string
@@ -45,6 +46,11 @@ class sSettings
         $a = array_sum(array_map('ord', str_split($name))) + 999;
         $a = $a < 999 ? $a + 999 : $a;
 
-        return $route . '?a=' . $a;
+        $url = $route . '?a=' . $a;
+        if (!empty($_SESSION['mgrValidated'])) {
+            $url .= '&_token=' . rawurlencode(csrf_token());
+        }
+
+        return $url;
     }
 }

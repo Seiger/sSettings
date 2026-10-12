@@ -8,7 +8,7 @@ use Seiger\sSettings\Support\SettingsSchemaRepository;
 use Seiger\sSettings\Support\SystemSettingsStore;
 
 /**
- * @phpstan-type SchemaField array{name: string, label: string, description: string, type: string, options?: string}
+ * @phpstan-type SchemaField array{name: string, label: string, description: string, type: string, options?: string, multilingual?: bool}
  * @phpstan-type SchemaTab array{label: string, fields: list<SchemaField>}
  */
 class SettingsPanel extends Component
@@ -57,6 +57,7 @@ class SettingsPanel extends Component
         return view('sSettings::livewire.settings-panel', [
             'catalog' => $catalog,
             'tabs' => $this->schema,
+            'store' => app(SystemSettingsStore::class),
         ]);
     }
 

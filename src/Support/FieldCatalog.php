@@ -114,6 +114,11 @@ final class FieldCatalog
         return in_array($this->normalizeType($type), self::OPTION_TYPES, true);
     }
 
+    public function supportsMultilingual(string $type): bool
+    {
+        return in_array($this->normalizeType($type), ['text', 'textarea', 'textareamini', 'richtext'], true);
+    }
+
     public function storesMultipleValues(string $type): bool
     {
         return in_array($this->normalizeType($type), self::MULTIPLE_VALUE_TYPES, true);

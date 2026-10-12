@@ -5,7 +5,7 @@ use RuntimeException;
 use Throwable;
 
 /**
- * @phpstan-type SchemaField array{name: string, label: string, description: string, type: string, options?: string}
+ * @phpstan-type SchemaField array{name: string, label: string, description: string, type: string, options?: string, multilingual?: bool}
  * @phpstan-type SchemaTab array{label: string, fields: list<SchemaField>}
  */
 final class SettingsSchemaRepository
@@ -137,6 +137,10 @@ final class SettingsSchemaRepository
 
                 if ($this->fields->supportsOptions($type)) {
                     $normalizedField['options'] = $this->fields->serializeOptions($field['options'] ?? '');
+                }
+
+                if ($this->fields->supportsMultilingual($type) && !empty($field['multilingual'])) {
+                    $normalizedField['multilingual'] = true;
                 }
 
                 $fields[] = $normalizedField;

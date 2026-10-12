@@ -126,7 +126,10 @@
     </div>
 
     @php
-        $activeFields = (array) data_get($tabs, $activeTab . '.fields', []);
+        $activeFields = [];
+        foreach ((array) data_get($tabs, $activeTab . '.fields', []) as $field) {
+            array_push($activeFields, ...$store->localizedFields($field));
+        }
     @endphp
 
     <div class="evo-ui-settings-values">
@@ -136,9 +139,14 @@
                 $fieldKey = (string) ($field['name'] ?? '');
                 $name = 'sset_' . $fieldKey;
                 $label = trim((string) __($field['label'] ?: 'sSettings::global.no_title'));
+                if (isset($field['_locale'])) {
+                    $label .= ' (' . strtoupper($field['_locale']) . ')';
+                }
                 $description = trim((string) __($field['description'] ?? ''));
                 $inputId = 'ssettings-' . $name;
-                $usage = "{{ evo()->getConfig('" . $name . "', '') }}";
+                $usage = isset($field['_base_name'])
+                    ? '@' . "evoConfig('sset_" . $field['_base_name'] . "_' . evo()->getLocale())"
+                    : '@' . "evoConfig('" . $name . "')";
                 $options = $catalog->parseOptions($field['options'] ?? '');
             @endphp
 
@@ -150,14 +158,14 @@
                 <div class="evo-ui-settings-row {{ in_array($type, ['textarea', 'textareamini', 'richtext'], true) ? 'evo-ui-settings-row--textarea' : '' }}" data-evo-settings-row>
                     <div class="evo-ui-settings-row__meta">
                         <label class="evo-ui-settings-row__label" for="{{ $inputId }}">{{ $label }}</label>
-                        <code class="evo-ui-settings-row__usage">{{ $usage }}</code>
+                        @include('sSettings::livewire.config-usage', ['usage' => $usage, 'usageClass' => 'evo-ui-settings-row__usage', 'usageStyle' => 'border: 0; background: transparent; padding: 0; text-align: left; cursor: pointer;'])
                     </div>
 
                     <div class="evo-ui-settings-row__control">
                         @if($type === 'checkbox')
                             <label class="evo-ui-checkbox">
                                 <input type="checkbox" wire:model="data.{{ $name }}">
-                                <span>{{ $description ?: $label }}</span>
+                                <span>{!! \EvoUI\Support\DescriptionHtml::render($description ?: $label) !!}</span>
                             </label>
                         @elseif($type === 'checkboxgroup')
                             <div class="evo-ui-option-stack" id="{{ $inputId }}">
@@ -249,7 +257,7 @@
                                     aria-label="@lang('sSettings::global.select_file')"
                                     onclick="window.EvoUI?.browseMediaField(@js($inputId), @js($type === 'image' ? 'images' : 'files'))"
                                 >
-                                    <x-evo::icon :name="$type === 'image' ? 'image' : 'file'" />
+                                    <x-evo::icon :name="$type === 'image' ? 'photo' : 'file'" />
                                 </button>
                                 @if($type === 'image' && !empty($data[$name]))
                                     <span class="evo-ui-image-preview" style="background-image: url('{{ str_starts_with((string) $data[$name], 'http') ? $data[$name] : EVO_SITE_URL . ltrim((string) $data[$name], '/') }}')"></span>
@@ -265,7 +273,7 @@
                         @endif
 
                         @if($description && $type !== 'checkbox')
-                            <p class="evo-ui-settings-row__description">{{ $description }}</p>
+                            <p class="evo-ui-settings-row__description">{!! \EvoUI\Support\DescriptionHtml::render($description) !!}</p>
                         @endif
                     </div>
                 </div>

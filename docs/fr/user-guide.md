@@ -1,5 +1,18 @@
 # Guide utilisateur
 
+## Champs de texte multilingues
+
+Avec sLang installé, activez **Champ multilingue** dans la configuration de Text,
+Textarea, Textarea Mini ou RichText. Chaque langue configurée dans sLang dispose
+de sa propre valeur, par exemple `@evoConfig('sset_adv_top_uk')` et
+`@evoConfig('sset_adv_top_en')`.
+
+La valeur initiale est copiée dans la langue par défaut. La clé sans suffixe
+reprend cette valeur. Les nouvelles langues apparaissent automatiquement ; les
+valeurs des langues supprimées restent conservées, même après désactivation du
+mode multilingue. Sans sLang, le champ reste utilisable avec une seule valeur.
+Les conflits de clés générées empêchent la sauvegarde de la configuration.
+
 ## Ouvrir sSettings
 
 Dans le manager Evolution CMS, ouvrez **Outils -> Paramètres utilisateur**. Le

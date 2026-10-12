@@ -11,7 +11,7 @@ use Seiger\sSettings\Support\SystemSettingsStore;
  * @phpstan-type OptionRow array{value: string, label: string}
  * @phpstan-type FieldRow array<string, mixed>
  * @phpstan-type TabRow array<string, mixed>
- * @phpstan-type SchemaField array{name: string, label: string, description: string, type: string, options?: string}
+ * @phpstan-type SchemaField array{name: string, label: string, description: string, type: string, options?: string, multilingual?: bool}
  * @phpstan-type SchemaTab array{label: string, fields: list<SchemaField>}
  */
 class ConfigurePanel extends Component
@@ -135,7 +135,7 @@ class ConfigurePanel extends Component
     }
 
     /** @param array<mixed> $options */
-    public function updateFieldByUid(string $fieldUid, string $name, string $label, string $description, string $type, array $options = []): void
+    public function updateFieldByUid(string $fieldUid, string $name, string $label, string $description, string $type, array $options = [], ?bool $multilingual = null): void
     {
         $catalog = app(FieldCatalog::class);
         $type = $catalog->normalizeType($type);
@@ -150,6 +150,11 @@ class ConfigurePanel extends Component
                 $this->tabs[$tabIndex]['fields'][$fieldIndex]['label'] = $label;
                 $this->tabs[$tabIndex]['fields'][$fieldIndex]['description'] = $description;
                 $this->tabs[$tabIndex]['fields'][$fieldIndex]['type'] = $type;
+                if (!$catalog->supportsMultilingual($type)) {
+                    unset($this->tabs[$tabIndex]['fields'][$fieldIndex]['multilingual']);
+                } elseif ($multilingual !== null && app(\Seiger\sSettings\Support\SettingsLanguages::class)->available()) {
+                    $this->tabs[$tabIndex]['fields'][$fieldIndex]['multilingual'] = $multilingual;
+                }
                 if ($catalog->supportsOptions($type)) {
                     $this->tabs[$tabIndex]['fields'][$fieldIndex]['options'] = $catalog->serializeOptions($options);
                 } else {
@@ -372,7 +377,9 @@ class ConfigurePanel extends Component
         $this->error = '';
 
         try {
-            $normalized = $schema->save($this->toSchema());
+            $candidate = $schema->normalize($this->toSchema());
+            $store->fieldDefinitions($candidate);
+            $normalized = $schema->save($candidate);
             $store->syncSchema($normalized);
             $this->openFieldUid = '';
             $this->fillDataFromSchema($normalized);
@@ -393,6 +400,7 @@ class ConfigurePanel extends Component
             'types' => $catalog->all(),
             'optionTypes' => $catalog->optionTypes(),
             'catalog' => $catalog,
+            'multilingualAvailable' => app(\Seiger\sSettings\Support\SettingsLanguages::class)->available(),
             'writable' => app(SettingsSchemaRepository::class)->isWritable(),
         ]);
     }
@@ -466,6 +474,9 @@ class ConfigurePanel extends Component
 
                 if (isset($field['options'])) {
                     $schemaField['options'] = (string) $field['options'];
+                }
+                if (!empty($field['multilingual'])) {
+                    $schemaField['multilingual'] = true;
                 }
 
                 $fields[] = $schemaField;
