@@ -33,25 +33,25 @@
         "fields" => [
             [
                 "name" => "facebook",
-                "label" => "sSettings::global.facebook",
+                "label" => "Facebook",
                 "description" => "sSettings::global.facebook_description",
                 "type" => "text",
             ],
             [
                 "name" => "instagram",
-                "label" => "sSettings::global.instagram",
+                "label" => "Instagram",
                 "description" => "sSettings::global.instagram_description",
                 "type" => "text",
             ],
             [
                 "name" => "linkedin",
-                "label" => "sSettings::global.linkedin",
+                "label" => "Linkedin",
                 "description" => "sSettings::global.linkedin_description",
                 "type" => "text",
             ],
             [
                 "name" => "twitter",
-                "label" => "sSettings::global.twitter",
+                "label" => "Twitter",
                 "description" => "sSettings::global.twitter_description",
                 "type" => "text",
             ],
