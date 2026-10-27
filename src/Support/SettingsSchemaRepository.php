@@ -5,6 +5,8 @@ use RuntimeException;
 use Throwable;
 
 /**
+ * Read the project settings schema and replace it atomically after parsing the generated PHP.
+ *
  * @phpstan-type SchemaField array{name: string, label: string, description: string, type: string, options?: string, multilingual?: bool}
  * @phpstan-type SchemaTab array{label: string, fields: list<SchemaField>}
  */
@@ -57,8 +59,15 @@ final class SettingsSchemaRepository
     }
 
     /**
+     * Normalize and parse the candidate in the active PHP process before writing a temporary file.
+     *
+     * PHP_BINARY can point to php-fpm in manager requests. Parsing in-process keeps
+     * syntax validation independent of a CLI executable and disabled shell functions.
+     * The existing config is replaced only after the complete candidate is written.
+     *
      * @param array<mixed> $tabs
      * @return array<string, SchemaTab>
+     * @throws RuntimeException When validation, writing or replacement fails.
      */
     public function save(array $tabs): array
     {
@@ -75,18 +84,16 @@ final class SettingsSchemaRepository
         }
 
         $payload = "<?php return " . var_export($schema, true) . ";\n";
+        try {
+            token_get_all($payload, TOKEN_PARSE);
+        } catch (\ParseError $exception) {
+            throw new RuntimeException('Generated settings config is invalid.', 0, $exception);
+        }
+
         $tmp = $path . '.tmp';
 
         if (file_put_contents($tmp, $payload, LOCK_EX) === false) {
             throw new RuntimeException('Cannot write temporary settings config.');
-        }
-
-        if (function_exists('exec')) {
-            exec(escapeshellarg(PHP_BINARY) . ' -l ' . escapeshellarg($tmp), $output, $exitCode);
-            if ($exitCode !== 0) {
-                @unlink($tmp);
-                throw new RuntimeException('Generated settings config is invalid.');
-            }
         }
 
         if (!rename($tmp, $path)) {

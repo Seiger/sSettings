@@ -70,9 +70,11 @@ kluczy tłumaczeń. Własne etykiety bez tłumaczenia są zapisywane jako tekst.
 
 ## Bezpieczny zapis schematu
 
-`SettingsSchemaRepository::save()` zapisuje dane do pliku tymczasowego,
-uruchamia `php -l`, jeśli dostępne jest `exec()`, a potem zamienia plik
-docelowy. Chroni to przed częściowo zapisanym plikiem PHP.
+`SettingsSchemaRepository::save()` sprawdza wygenerowany PHP przez
+`token_get_all(..., TOKEN_PARSE)` w bieżącym procesie PHP, a następnie zapisuje
+plik tymczasowy i zastępuje plik docelowy. Nie wykonuje wygenerowanego kodu ani
+nie uruchamia procesu potomnego, więc działa z PHP-FPM/FastCGI i wyłączonym
+`exec()`. Błąd walidacji lub zastąpienia pozostawia dotychczasową konfigurację.
 
 Po zapisie schemat jest synchronizowany przez
 `SystemSettingsStore::syncSchema()`: nowe `sset_*` są tworzone, a stare

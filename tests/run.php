@@ -29,7 +29,7 @@ assertSame(false, $catalog->storesValue('divider'), 'divider value ownership');
 $composer = json_decode((string) file_get_contents(dirname(__DIR__) . '/composer.json'), true);
 assertSame('GPL-3.0-or-later', $composer['license'] ?? null, 'composer license uses explicit SPDX expression');
 assertSame('^1.3', $composer['require']['evolution-cms/evo-ui'] ?? null, 'composer evo-ui dependency uses release constraint');
-assertSame('php tests/run.php', $composer['scripts']['test'] ?? null, 'composer test script runs the smoke suite');
+assertSame(['php tests/schema-write.php', 'php tests/run.php'], $composer['scripts']['test'] ?? null, 'composer test runs schema-write regressions and the smoke suite');
 
 $readme = (string) file_get_contents(dirname(__DIR__) . '/README.md');
 assertContains('composer validate --strict --no-check-publish', $readme, 'README documents composer validate release gate');
@@ -127,7 +127,8 @@ foreach (['en', 'uk', 'ru', 'fr'] as $locale) {
 }
 
 $settingsPanel = (string) file_get_contents(dirname(__DIR__) . '/views/livewire/settings-panel.blade.php');
-$evoStyles = (string) file_get_contents('/Users/dmi3yy/PhpstormProjects/Extras/evo-ui/resources/css/evo-ui.css');
+$evoUiRoot = $demoCore . '/vendor/evolution-cms/evo-ui';
+$evoStyles = (string) file_get_contents($evoUiRoot . '/resources/css/evo-ui.css');
 assertSame(false, is_file(dirname(__DIR__) . '/assets/ssettings.css'), 'sSettings does not ship local manager UI CSS');
 assertContains('evo-ui-form-surface--layout-settings', $settingsPanel, 'values screen uses EvoUI settings form surface');
 assertContains('evo-ui-settings-values', $settingsPanel, 'values root uses EvoUI settings values primitive');
@@ -356,7 +357,7 @@ assertContains('this.type, this.options', $configurePanel, 'field modal sends op
 assertNotContains('wire:model.live.debounce.150ms', $configurePanel, 'configure form avoids live debounce races before save');
 assertNotContains('wire:model.live=', $configurePanel, 'configure form avoids live update races before save');
 assertNotContains('wire:model="tabs.{{ $tabIndex }}.fields.{{ $fieldIndex }}.label"', $configurePanel, 'field modal avoids draggable index-bound models');
-$reorderRail = file_get_contents('/Users/dmi3yy/PhpstormProjects/Extras/evo-ui/views/components/reorder-rail.blade.php');
+$reorderRail = file_get_contents($evoUiRoot . '/views/components/reorder-rail.blade.php');
 if ($reorderRail === false) {
     fwrite(STDERR, "Assertion failed: shared reorder rail file is readable\n");
     exit(1);
@@ -562,7 +563,6 @@ assertSame('Second renamed', $configure->tabs[0]['label'], 'tab label update fol
 assertSame('First', $configure->tabs[1]['label'], 'tab reorder does not duplicate labels');
 
 $schemaRepositorySource = (string) file_get_contents(dirname(__DIR__) . '/src/Support/SettingsSchemaRepository.php');
-assertContains('escapeshellarg(PHP_BINARY)', $schemaRepositorySource, 'settings config lint uses current PHP binary');
 assertContains('function uniqueKey', $schemaRepositorySource, 'settings schema repository uniquifies duplicate keys');
 
 $defaultNormalized = $schemaRepository->normalize(require dirname(__DIR__) . '/config/sSettingsSettings.php');

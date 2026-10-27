@@ -79,9 +79,11 @@ is saved. Custom labels without translations are stored as plain text.
 
 ## Safe Schema Writes
 
-`SettingsSchemaRepository::save()` writes through a temporary file, runs `php -l`
-when `exec()` is available, then replaces the target schema file. This prevents
-half-written PHP config files.
+`SettingsSchemaRepository::save()` validates the generated PHP with
+`token_get_all(..., TOKEN_PARSE)` in the current PHP process before writing a
+temporary file and replacing the target. It does not execute the generated code
+or start a child process, so saving works with PHP-FPM/FastCGI and disabled
+`exec()`. The existing config remains intact when validation or replacement fails.
 
 Schema save also calls `SystemSettingsStore::syncSchema()`, which creates new
 `sset_*` system settings and removes old `sset_*` settings that are no longer in

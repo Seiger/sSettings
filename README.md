@@ -72,3 +72,15 @@ composer validate --strict --no-check-publish
 composer test
 php tests/run.php
 ```
+
+Schema saving validates generated PHP in the current process, including on
+PHP-FPM/FastCGI hosts where `PHP_BINARY` is not a CLI executable. The isolated
+write regression never bootstraps the CMS or modifies the site's config or database:
+
+```console
+SSETTINGS_DEMO_CORE=/path/to/site/core php tests/schema-write.php
+SSETTINGS_DEMO_CORE=/path/to/site/core php -d disable_functions=exec tests/schema-write.php
+```
+
+Set `SSETTINGS_NON_CLI_BINARY=/path/to/php-fpm` to exercise the non-CLI runtime
+case. `composer test` runs this write regression before the existing manager smoke suite.

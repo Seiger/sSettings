@@ -31,7 +31,10 @@
         }
     },
     "scripts": {
-        "test": "php tests/run.php",
+        "test": [
+            "php tests/schema-write.php",
+            "php tests/run.php"
+        ],
         "post-autoload-dump": []
     }
 }
