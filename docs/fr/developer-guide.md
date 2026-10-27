@@ -73,9 +73,12 @@ comme texte.
 
 ## Écriture sûre du schéma
 
-`SettingsSchemaRepository::save()` écrit dans un fichier temporaire, exécute
-`php -l` si `exec()` est disponible, puis remplace le fichier cible. Cela évite
-un fichier de configuration PHP partiellement écrit.
+`SettingsSchemaRepository::save()` vérifie le PHP généré avec
+`token_get_all(..., TOKEN_PARSE)` dans le processus PHP courant, puis écrit un
+fichier temporaire et remplace le fichier cible. Le code généré n'est pas exécuté
+et aucun processus enfant n'est lancé. Cela fonctionne avec PHP-FPM/FastCGI et
+`exec()` désactivé. Un échec de validation ou de remplacement conserve la
+configuration existante.
 
 Après l'enregistrement, `SystemSettingsStore::syncSchema()` synchronise les
 paramètres système: les nouveaux `sset_*` sont créés, et les anciens `sset_*`

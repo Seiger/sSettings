@@ -72,9 +72,12 @@ normalisiert. Eigene Labels ohne Übersetzung werden als Klartext gespeichert.
 
 ## Sicheres Schreiben des Schemas
 
-`SettingsSchemaRepository::save()` schreibt zuerst in eine temporäre Datei,
-führt `php -l` aus, wenn `exec()` verfügbar ist, und ersetzt danach die
-Zieldatei. So wird eine teilweise geschriebene PHP-Konfiguration vermieden.
+`SettingsSchemaRepository::save()` prüft den erzeugten PHP-Code mit
+`token_get_all(..., TOKEN_PARSE)` im aktuellen PHP-Prozess, schreibt dann eine
+temporäre Datei und ersetzt die Zieldatei. Der erzeugte Code wird nicht
+ausgeführt und kein Unterprozess gestartet. Das funktioniert mit PHP-FPM/FastCGI
+und deaktiviertem `exec()`. Bei Prüf- oder Ersetzungsfehlern bleibt die bisherige
+Konfiguration erhalten.
 
 Nach dem Speichern synchronisiert `SystemSettingsStore::syncSchema()` die
 Systemeinstellungen: neue `sset_*` werden erstellt, alte nicht mehr im Schema
