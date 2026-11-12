@@ -138,11 +138,11 @@
                 $type = $catalog->normalizeType((string) ($field['type'] ?? 'text'));
                 $fieldKey = (string) ($field['name'] ?? '');
                 $name = 'sset_' . $fieldKey;
-                $label = trim((string) __($field['label'] ?: 'sSettings::global.no_title'));
+                $label = trim($catalog->displayText(($field['label'] ?? '') ?: 'sSettings::global.no_title'));
                 if (isset($field['_locale'])) {
                     $label .= ' (' . strtoupper($field['_locale']) . ')';
                 }
-                $description = trim((string) __($field['description'] ?? ''));
+                $description = trim($catalog->displayText($field['description'] ?? ''));
                 $inputId = 'ssettings-' . $name;
                 $usage = isset($field['_base_name'])
                     ? '@' . "evoConfig('sset_" . $field['_base_name'] . "_' . evo()->getLocale())"
@@ -172,7 +172,7 @@
                                 @forelse($options as $option)
                                     <label class="evo-ui-option-choice">
                                         <input type="checkbox" value="{{ $option['value'] }}" wire:model="data.{{ $name }}">
-                                        <span>{{ __($option['label']) }}</span>
+                                        <span>{{ $catalog->displayText($option['label']) }}</span>
                                     </label>
                                 @empty
                                     <span class="evo-ui-option-empty">@lang('sSettings::global.no_options')</span>
@@ -183,7 +183,7 @@
                                 @forelse($options as $option)
                                     <label class="evo-ui-option-choice">
                                         <input type="radio" name="{{ $inputId }}" value="{{ $option['value'] }}" wire:model="data.{{ $name }}">
-                                        <span>{{ __($option['label']) }}</span>
+                                        <span>{{ $catalog->displayText($option['label']) }}</span>
                                     </label>
                                 @empty
                                     <span class="evo-ui-option-empty">@lang('sSettings::global.no_options')</span>
@@ -198,7 +198,7 @@
                             >
                                 <option value=""></option>
                                 @foreach($options as $option)
-                                    <option value="{{ $option['value'] }}">{{ __($option['label']) }}</option>
+                                    <option value="{{ $option['value'] }}">{{ $catalog->displayText($option['label']) }}</option>
                                 @endforeach
                             </select>
                         @elseif($type === 'listboxmultiple')
@@ -210,7 +210,7 @@
                                 size="{{ min(max(count($options), 5), 10) }}"
                             >
                                 @foreach($options as $option)
-                                    <option value="{{ $option['value'] }}">{{ __($option['label']) }}</option>
+                                    <option value="{{ $option['value'] }}">{{ $catalog->displayText($option['label']) }}</option>
                                 @endforeach
                             </select>
                         @elseif($type === 'richtext')

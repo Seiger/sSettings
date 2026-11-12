@@ -449,7 +449,11 @@ class ConfigurePanel extends Component
         $this->fillDataFromSchema($snapshot['schema']);
     }
 
-    /** @param array<string, SchemaTab> $schema */
+    /**
+     * Restore editor rows with their translated text and the source needed for saving.
+     *
+     * @param array<string, SchemaTab> $schema
+     */
     protected function fillDataFromSchema(array $schema): void
     {
         $previousTabs = array_values($this->tabs);
@@ -472,21 +476,19 @@ class ConfigurePanel extends Component
 
             foreach ((array) ($tab['fields'] ?? []) as $field) {
                 $previousField = $previousFieldsByName->get((string) ($field['name'] ?? ''), $previousFields[$fieldPosition] ?? []);
-                $fields[] = [
+                $fields[] = $this->withDisplayText([
                     ...$field,
                     '_uid' => (string) ($previousField['_uid'] ?? $this->uid('field')),
-                    'label' => $this->displayText((string) ($field['label'] ?? '')),
-                    'description' => $this->displayText((string) ($field['description'] ?? '')),
-                ];
+                ], 'label', 'description');
                 $fieldPosition++;
             }
 
-            $tabs[] = [
+            $tabs[] = $this->withDisplayText([
                 '_uid' => (string) ($previousTab['_uid'] ?? $this->uid('tab')),
                 'key' => (string) $key,
-                'label' => $this->displayText((string) ($tab['label'] ?? '')),
+                'label' => $tab['label'] ?? '',
                 'fields' => $fields,
-            ];
+            ], 'label');
             $tabPosition++;
         }
 
@@ -495,7 +497,11 @@ class ConfigurePanel extends Component
         $this->dirty = false;
     }
 
-    /** @return list<array{key: string, label: string, fields: list<SchemaField>}> */
+    /**
+     * Serialize edits while restoring the source of unchanged translated text.
+     *
+     * @return list<array{key: string, label: string, fields: list<SchemaField>}>
+     */
     protected function toSchema(): array
     {
         $schema = [];
@@ -506,8 +512,8 @@ class ConfigurePanel extends Component
             foreach ($tab['fields'] as $field) {
                 $schemaField = [
                     'name' => (string) ($field['name'] ?? ''),
-                    'label' => (string) ($field['label'] ?? ''),
-                    'description' => (string) ($field['description'] ?? ''),
+                    'label' => $this->sourceText($field, 'label'),
+                    'description' => $this->sourceText($field, 'description'),
                     'type' => (string) ($field['type'] ?? 'text'),
                 ];
 
@@ -523,7 +529,7 @@ class ConfigurePanel extends Component
 
             $schema[] = [
                 'key' => $tab['key'],
-                'label' => $tab['label'],
+                'label' => $this->sourceText($tab, 'label'),
                 'fields' => $fields,
             ];
         }
@@ -713,14 +719,45 @@ class ConfigurePanel extends Component
         return $candidate;
     }
 
+    /** Resolve a schema string for display in the editor. */
     protected function displayText(string $value): string
     {
-        if ($value === '') {
-            return '';
+        return app(FieldCatalog::class)->displayText($value);
+    }
+
+    /**
+     * Keep the original text and its displayed form together in the locked editor row.
+     *
+     * @param array<string, mixed> $row
+     * @return array<string, mixed>
+     * @since 2.1.0
+     */
+    private function withDisplayText(array $row, string ...$keys): array
+    {
+        foreach ($keys as $key) {
+            $source = (string) ($row[$key] ?? '');
+            $display = trim($this->displayText($source));
+            $row[$key] = $display;
+
+            if ($display !== $source) {
+                $row['_sourceText'][$key] = [$source, $display];
+            }
         }
 
-        $translated = __($value);
+        return $row;
+    }
 
-        return is_string($translated) ? $translated : $value;
+    /**
+     * Keep the original key when the editor still contains the text it displayed.
+     *
+     * @param array<string, mixed> $row
+     * @since 2.1.0
+     */
+    private function sourceText(array $row, string $key): string
+    {
+        $value = (string) ($row[$key] ?? '');
+        [$source, $display] = $row['_sourceText'][$key] ?? [$value, $value];
+
+        return trim($value) === $display ? $source : $value;
     }
 }

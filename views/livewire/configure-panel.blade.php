@@ -244,8 +244,8 @@
                     @forelse((array) ($tab['fields'] ?? []) as $fieldIndex => $field)
                         @php
                             $fieldName = (string) ($field['name'] ?? '');
-                            $fieldLabel = trim((string) __($field['label'] ?? ''));
-                            $fieldDescription = trim((string) __($field['description'] ?? ''));
+                            $fieldLabel = trim((string) ($field['label'] ?? ''));
+                            $fieldDescription = trim((string) ($field['description'] ?? ''));
                             $fieldType = (string) ($field['type'] ?? 'text');
                             $fieldUsage = !empty($field['multilingual']) && $catalog->supportsMultilingual($fieldType)
                                 ? '@' . "evoConfig('sset_" . $fieldName . "_' . evo()->getLocale())"

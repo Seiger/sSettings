@@ -1,5 +1,6 @@
 <?php namespace Seiger\sSettings\Support;
 
+/** Defines settings field types and prepares their labels and options for display. */
 final class FieldCatalog
 {
     /** @var array<string, string> */
@@ -58,6 +59,24 @@ final class FieldCatalog
     public function label(string $type): string
     {
         return self::TYPES[$this->normalizeType($type)] ?? self::TYPES['text'];
+    }
+
+    /**
+     * Resolve a schema label, description or option to text for the caller to escape.
+     *
+     * Preserve the input when the translator returns a group instead of a string.
+     *
+     * @since 2.1.0
+     */
+    public function displayText(mixed $value): string
+    {
+        if (!is_string($value) || $value === '') {
+            return '';
+        }
+
+        $translated = __($value);
+
+        return is_string($translated) ? $translated : $value;
     }
 
     public function normalizeType(string $type): string
