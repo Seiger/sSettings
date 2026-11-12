@@ -13,8 +13,6 @@ Social Links, Tracking-Skripte, Dateien, Bilder und Konfigurationsflags.
 
 ![sSettings-Manager mit Registerkarten für Einstellungen und Konfiguration](../assets/img/ssettings-manager.png)
 
-[![Unterstützte PHP-Versionen: 8.4 und 8.5](https://img.shields.io/badge/PHP_supported-8.4_%7C_8.5-777BB4?logo=php&logoColor=white)](releases.md)
-
 ## Anleitungen
 
 - [Benutzerhandbuch](user-guide.md)

@@ -13,8 +13,6 @@ scripts, file paths, images, and project-specific flags.
 
 ![sSettings manager with project settings and configuration tabs](../assets/img/ssettings-manager.png)
 
-[![PHP supported: 8.4 and 8.5](https://img.shields.io/badge/PHP_supported-8.4_%7C_8.5-777BB4?logo=php&logoColor=white)](releases.md)
-
 ## Guides
 
 - [User Guide](user-guide.md)

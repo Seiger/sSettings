@@ -13,8 +13,6 @@ sSettings додає компактний екран налаштувань у �
 
 ![Панель sSettings із вкладками налаштувань і конфігурації](../assets/img/ssettings-manager.png)
 
-[![Підтримувані версії PHP: 8.4 і 8.5](https://img.shields.io/badge/PHP_supported-8.4_%7C_8.5-777BB4?logo=php&logoColor=white)](releases.md)
-
 ## Розділи
 
 - [Посібник користувача](user-guide.md)

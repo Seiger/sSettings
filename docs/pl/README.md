@@ -13,8 +13,6 @@ społecznościowych, skryptów śledzenia, plików, obrazów i flag konfiguracyj
 
 ![Panel sSettings z zakładkami ustawień i konfiguracji](../assets/img/ssettings-manager.png)
 
-[![Obsługiwane wersje PHP: 8.4 i 8.5](https://img.shields.io/badge/PHP_supported-8.4_%7C_8.5-777BB4?logo=php&logoColor=white)](releases.md)
-
 ## Przewodniki
 
 - [Przewodnik użytkownika](user-guide.md)
