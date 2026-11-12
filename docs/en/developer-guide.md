@@ -1,3 +1,7 @@
+---
+sidebar_position: 3
+---
+
 # Developer Guide
 
 ## Architecture
@@ -32,7 +36,7 @@ Legacy package wiring stays intentionally small:
 Run inside the Evolution CMS `core` directory:
 
 ```console
-php artisan package:installrequire seiger/ssettings "*"
+php artisan package:installrequire seiger/ssettings "^2.0"
 php artisan vendor:publish --provider="Seiger\\sSettings\\sSettingsServiceProvider"
 ```
 

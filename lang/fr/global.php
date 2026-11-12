@@ -2,6 +2,7 @@
     'multilingual_field' => 'Champ multilingue',
     'multilingual_field_help' => 'Une valeur distincte pour chaque langue sLang. Les valeurs des langues supprimées sont conservées.',
     'multilingual_key_conflict' => 'La clé du champ multilingue entre en conflit avec celle d\'un autre champ. Modifiez le nom du champ.',
+    'schema_changed' => 'Le schéma des paramètres a changé depuis l\'ouverture de l\'éditeur. Rechargez la page et appliquez de nouveau vos modifications.',
     'add_new_field' => 'Ajouter un nouveau champ dans cet onglet',
     'add_new_tab' => 'Ajouter un nouvel onglet',
     'add_tab_after' => 'Ajouter un onglet après celui-ci',

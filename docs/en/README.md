@@ -1,3 +1,8 @@
+---
+slug: /
+sidebar_position: 1
+---
+
 # sSettings Documentation
 
 sSettings adds a compact settings workspace to the Evolution CMS manager. It is
@@ -9,6 +14,7 @@ scripts, file paths, images, and project-specific flags.
 - [User Guide](user-guide.md)
 - [Developer Guide](developer-guide.md)
 - [Frontend Guide](frontend-guide.md)
+- [Releases and compatibility](releases.md)
 
 ## Main Capabilities
 

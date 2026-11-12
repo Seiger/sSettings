@@ -25,7 +25,7 @@ sSettings - це evo-ui + Livewire модуль менеджера.
 У директорії `core` Evolution CMS:
 
 ```console
-php artisan package:installrequire seiger/ssettings "*"
+php artisan package:installrequire seiger/ssettings "^2.0"
 php artisan vendor:publish --provider="Seiger\\sSettings\\sSettingsServiceProvider"
 ```
 

@@ -1,3 +1,8 @@
+---
+slug: /
+sidebar_position: 1
+---
+
 # Документація sSettings
 
 sSettings додає компактний екран налаштувань у менеджер Evolution CMS. Модуль

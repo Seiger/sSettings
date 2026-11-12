@@ -1,8 +1,8 @@
 # sSettings for Evolution CMS
-![sSettings](https://repository-images.githubusercontent.com/627975404/56ba0688-1b24-4ea5-a58a-359fa4ef1be4)
+![sSettings manager in Evolution CMS with project settings and configuration tabs](docs/assets/img/ssettings-manager.png)
 [![Latest Stable Version](https://img.shields.io/packagist/v/seiger/ssettings?label=version)](https://packagist.org/packages/seiger/ssettings)
 [![CMS Evolution](https://img.shields.io/badge/CMS-Evolution-brightgreen.svg)](https://github.com/evolution-cms/evolution)
-![PHP version](https://img.shields.io/packagist/php-v/seiger/ssettings)
+[![PHP supported: 8.4 and 8.5](https://img.shields.io/badge/PHP_supported-8.4_%7C_8.5-777BB4?logo=php&logoColor=white)](#compatibility)
 [![License](https://img.shields.io/packagist/l/seiger/ssettings)](https://packagist.org/packages/seiger/ssettings)
 [![Issues](https://img.shields.io/github/issues/Seiger/ssettings)](https://github.com/Seiger/ssettings/issues)
 [![Stars](https://img.shields.io/packagist/stars/Seiger/ssettings)](https://packagist.org/packages/seiger/ssettings)
@@ -43,12 +43,18 @@ cd core
 Run php artisan command
 
 ```console
-php artisan package:installrequire seiger/ssettings "*"
+php artisan package:installrequire seiger/ssettings "^2.0"
 ```
 
 ```console
 php artisan vendor:publish --provider="Seiger\sSettings\sSettingsServiceProvider"
 ```
+
+## Compatibility
+
+sSettings 2.x supports PHP 8.4 and 8.5. It requires Evolution CMS 3.5.8 or later in the 3.x line and EvoUI 1.3 or later in the 1.x line.
+
+Package checks also passed on the PHP 8.6.0 RC5 preview.
 
 ## Documentation
 
@@ -60,8 +66,11 @@ File-first dDocs documentation lives in `docs/`:
 - [German](docs/de/README.md)
 - [French](docs/fr/README.md)
 
-Legacy public-site documentation is still available at
-[seiger.github.io/sSettings](https://seiger.github.io/sSettings/).
+The [documentation site](https://seiger.github.io/sSettings/) has current 2.x
+guides and a [1.x archive](https://seiger.github.io/sSettings/1.x/). Its build
+configuration lives in the [`docs` branch](https://github.com/Seiger/sSettings/tree/docs).
+See [GitHub Releases](https://github.com/Seiger/sSettings/releases) for changes
+in individual versions.
 
 ## Release Checks
 

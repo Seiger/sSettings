@@ -143,8 +143,22 @@ try {
 
     $revision = $schema->readSnapshot()['revision'];
     $schema->save(['basic' => ['label' => 'Edited elsewhere', 'fields' => [$field, $keep, $external]]]);
-    $store->saveSchema($schema, $remaining, $revision, ['notice' => true]);
+    $current = $schema->readSnapshot();
+    $outdated = ['basic' => ['fields' => [$keep, $external, ['name' => 'outdated', 'type' => 'text']]]];
+    evo()->cacheClears = [];
+    foreach ([$revision, null] as $staleRevision) {
+        $message = null;
+        try {
+            $store->saveSchema($schema, $outdated, $staleRevision, ['notice' => true]);
+        } catch (RuntimeException $error) {
+            $message = $error->getMessage();
+        }
+        $check('sSettings::global.schema_changed', $message, 'an outdated editor must reload before saving');
+        $check($current, $schema->readSnapshot(), 'an outdated editor preserves the latest schema');
+    }
     $check('Hello', evo()->getConfig('sset_notice_en'), 'a stale editor cannot prune');
+    $check(null, evo()->getConfig('sset_outdated', null), 'a stale editor cannot seed new keys');
+    $check([], evo()->cacheClears, 'a stale editor does not clear the cache');
     $save($complete);
 
     $schema->save(['basic' => ['fields' => [$field, $keep]]]);

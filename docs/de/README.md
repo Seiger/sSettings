@@ -1,3 +1,8 @@
+---
+slug: /
+sidebar_position: 1
+---
+
 # sSettings Dokumentation
 
 sSettings fügt dem Evolution CMS Manager einen kompakten Einstellungsbereich

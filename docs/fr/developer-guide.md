@@ -25,7 +25,7 @@ sSettings est un module manager basé sur evo-ui et Livewire.
 Dans le dossier `core` d'Evolution CMS:
 
 ```console
-php artisan package:installrequire seiger/ssettings "*"
+php artisan package:installrequire seiger/ssettings "^2.0"
 php artisan vendor:publish --provider="Seiger\\sSettings\\sSettingsServiceProvider"
 ```
 

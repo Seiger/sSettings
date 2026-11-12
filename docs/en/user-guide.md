@@ -1,11 +1,15 @@
+---
+sidebar_position: 2
+---
+
 # User Guide
 
 ## Opening sSettings
 
-Open the Evolution CMS manager and choose **Tools -> User settings**. The module
-has two manager tabs:
+Open the Evolution CMS manager and choose **Tools → Custom Settings**. The module
+shows the configured settings tabs and a **Configuration** tab:
 
-- **Settings** - edit the actual values.
+- **Settings tabs** - edit the stored values.
 - **Configuration** - edit tabs, fields, labels, descriptions, and field types.
 
 The interface uses evo-ui and Livewire, so tab switching and saves refresh only

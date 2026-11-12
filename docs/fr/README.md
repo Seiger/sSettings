@@ -1,3 +1,8 @@
+---
+slug: /
+sidebar_position: 1
+---
+
 # Documentation sSettings
 
 sSettings ajoute un espace de configuration compact dans le manager Evolution

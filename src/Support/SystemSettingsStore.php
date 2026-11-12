@@ -111,7 +111,7 @@ final class SystemSettingsStore
     }
 
     /**
-     * Save the editor schema and prune only confirmed removals from its persisted baseline.
+     * Save the editor schema against its current revision and prune only confirmed removals.
      *
      * Serialize package writes through the ownership record so a concurrent save cannot
      * replace the baseline between checking it and deleting its retired keys.
@@ -130,10 +130,14 @@ final class SystemSettingsStore
 
         $saved = $this->withOwnership(function (?array &$ownership) use ($repository, $revision, $retiredFields, $validStructure, $candidate, $definitions, $nextFields): array {
             $previous = $repository->readSnapshot();
+            if ($revision !== $previous['revision']) {
+                throw new \RuntimeException(__('sSettings::global.schema_changed'));
+            }
+
             $previousFields = $previous['revision'] === null ? [] : $this->declaredNames($previous['schema']);
             $knownFields = $ownership['fields'] ?? [];
             $missingFields = array_diff($previousFields, $nextFields);
-            $completeEdit = $validStructure && $revision !== null && $revision === $previous['revision']
+            $completeEdit = $validStructure && $revision !== null
                 && array_diff($knownFields, $previousFields) === []
                 && array_diff($missingFields, array_keys($retiredFields)) === [];
 
