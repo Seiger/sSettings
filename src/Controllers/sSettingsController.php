@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\View as ViewFactory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
+use Seiger\sSettings\Support\ManagerSettingsAccess;
 
 /** Renders the sSettings module for managers with the settings permission. */
 class sSettingsController
@@ -31,7 +32,7 @@ class sSettingsController
     }
 
     /**
-     * Check the manager's settings permission before building a module view.
+     * Check the manager's current settings grant before building a module view.
      *
      * Both HTTP routes and the file module render through this method.
      *
@@ -41,7 +42,7 @@ class sSettingsController
      */
     public function view(string $tpl, array $data = []): View
     {
-        if (!evo()->hasPermission('settings', 'mgr')) {
+        if (!ManagerSettingsAccess::allows()) {
             $message = __('global.access_permission_denied');
             evo()->webAlertAndQuit(is_string($message) ? $message : 'Access permission denied.', 'index.php?a=2');
         }

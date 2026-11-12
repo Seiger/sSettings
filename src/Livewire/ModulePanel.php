@@ -4,8 +4,8 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Livewire\Component;
 use Livewire\Attributes\On;
+use Seiger\sSettings\Support\ManagerSettingsAccess;
 use Seiger\sSettings\Support\SettingsSchemaRepository;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 /**
  * Builds the module navigation from the schema for authorized managers.
@@ -21,15 +21,13 @@ class ModulePanel extends Component
     public string $pendingTab = '';
 
     /**
-     * Check the current manager permission before mounting or processing an update.
+     * Check the manager's current settings grant before mounting or processing an update.
      *
      * @since 2.1.0
      */
     public function boot(): void
     {
-        if (!evo()->hasPermission('settings', 'mgr')) {
-            throw new AccessDeniedHttpException();
-        }
+        ManagerSettingsAccess::authorize();
     }
 
     public function mount(SettingsSchemaRepository $schema, string $activeTab = 'settings'): void

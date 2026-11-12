@@ -4,9 +4,9 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Livewire\Component;
 use Seiger\sSettings\Support\FieldCatalog;
+use Seiger\sSettings\Support\ManagerSettingsAccess;
 use Seiger\sSettings\Support\SettingsSchemaRepository;
 use Seiger\sSettings\Support\SystemSettingsStore;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 /**
  * Loads and saves schema-defined settings for authorized managers.
@@ -27,15 +27,13 @@ class SettingsPanel extends Component
     public bool $saved = false;
 
     /**
-     * Check the current manager permission before mounting or processing an update.
+     * Check the manager's current settings grant before mounting or processing an update.
      *
      * @since 2.1.0
      */
     public function boot(): void
     {
-        if (!evo()->hasPermission('settings', 'mgr')) {
-            throw new AccessDeniedHttpException();
-        }
+        ManagerSettingsAccess::authorize();
     }
 
     public function mount(SettingsSchemaRepository $schema, SystemSettingsStore $store, string $activeTab = ''): void
@@ -51,15 +49,13 @@ class SettingsPanel extends Component
     }
 
     /**
-     * Persist values against the current server schema after checking permission.
+     * Persist values against the current server schema after checking the current settings grant.
      *
      * A denied save stops before writing settings or clearing the cache.
      */
     public function save(SettingsSchemaRepository $schema, SystemSettingsStore $store): void
     {
-        if (!evo()->hasPermission('settings', 'mgr')) {
-            throw new AccessDeniedHttpException();
-        }
+        ManagerSettingsAccess::authorize();
 
         $this->saved = false;
         $store->saveValues($schema->read(), $this->data);

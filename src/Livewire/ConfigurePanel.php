@@ -5,9 +5,9 @@ use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 use Seiger\sSettings\Support\FieldCatalog;
+use Seiger\sSettings\Support\ManagerSettingsAccess;
 use Seiger\sSettings\Support\SettingsSchemaRepository;
 use Seiger\sSettings\Support\SystemSettingsStore;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 /**
  * Loads and edits the settings schema for authorized managers.
@@ -36,15 +36,13 @@ class ConfigurePanel extends Component
     public string $openFieldUid = '';
 
     /**
-     * Check the current manager permission before mounting or processing an update.
+     * Check the manager's current settings grant before mounting or processing an update.
      *
      * @since 2.1.0
      */
     public function boot(): void
     {
-        if (!evo()->hasPermission('settings', 'mgr')) {
-            throw new AccessDeniedHttpException();
-        }
+        ManagerSettingsAccess::authorize();
     }
 
     public function mount(SettingsSchemaRepository $schema): void
@@ -400,10 +398,10 @@ class ConfigurePanel extends Component
         $this->updatedTabs();
     }
 
-    /** Save the editor schema with the revision and field removals recorded by the server. */
+    /** Save the editor schema with the recorded removals after checking the current settings grant. */
     public function save(SettingsSchemaRepository $schema, SystemSettingsStore $store): bool
     {
-        if (!evo()->hasPermission('settings', 'mgr')) {
+        if (!ManagerSettingsAccess::allows()) {
             $message = __('global.access_permission_denied');
             $this->error = is_string($message) ? $message : 'Access permission denied.';
             return false;
