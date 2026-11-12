@@ -62,9 +62,6 @@
 .docs-legacy {border: 1px solid #bd8d2d; border-radius: 8px; background: #fff7e5; color: #694a0c; padding: 16px 20px; margin-bottom: 20px;}
 [data-theme='dark'] .docs-legacy {background: #352e1e; color: #f5d28c;}
 .docs-legacy a {text-decoration: underline;}
-.docs-overview-cover {display: grid; gap: 10px; margin-bottom: 20px;}
-.docs-overview-cover > img {display: block; width: 100%; height: auto; border-radius: 12px;}
-.docs-overview-cover a {justify-self: start;}
 .docs-developer-credit {background: var(--ifm-background-surface-color); border-top: 1px solid var(--docs-border); padding: 12px 8px; text-align: center; font-size: 13px; line-height: 1.5;}
 .docs-sidebar-credit {flex-shrink: 0;}
 .docs-mobile-credit {display: none;}

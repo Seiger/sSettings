@@ -1,5 +1,6 @@
 const path = require('node:path');
 const {loadConfig} = require('./scripts/config.cjs');
+const remarkCover = require('./scripts/remark-cover.cjs');
 const registry = loadConfig();
 const prepared = require('./.generated/registry.json');
 
@@ -51,7 +52,8 @@ module.exports = {
             id: line.id,
             path: path.join(__dirname, '.generated/content', line.id),
             routeBasePath: line.route || '/',
-            sidebarPath: require.resolve('./sidebars.js')
+            sidebarPath: require.resolve('./sidebars.js'),
+            beforeDefaultRemarkPlugins: line.cover ? [[remarkCover, line]] : []
         }]),
         ['@docusaurus/plugin-client-redirects', {
             createRedirects: (route) => {
