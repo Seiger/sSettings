@@ -9,6 +9,9 @@ sSettings speichert Wertfelder als Evolution Systemeinstellungen mit dem Präfix
 $phone = evo()->getConfig('sset_phone', '');
 ```
 
+Geben Sie Text in HTML mit `{{ $value }}` oder `@evoConfig('sset_phone')` aus.
+Beide Varianten maskieren HTML-Sonderzeichen.
+
 ## Blade Beispiele
 
 Telefonlink:
@@ -26,9 +29,9 @@ Telefonlink:
 Social Link:
 
 ```blade
-@php($facebook = evo()->getConfig('sset_facebook', ''))
+@php($facebook = \Seiger\sSettings\Support\SettingUrl::resolve(evo()->getConfig('sset_facebook', '')))
 
-@if($facebook !== '')
+@if($facebook !== null)
     <a href="{{ $facebook }}" rel="noopener" target="_blank">Facebook</a>
 @endif
 ```
@@ -39,12 +42,15 @@ Tracking-Skript:
 {!! evo()->getConfig('sset_google_analytics', '') !!}
 ```
 
-Geben Sie Textarea-Werte nur dann als raw HTML aus, wenn vertrauenswürdige
-Manager diese Werte kontrollieren.
+Diese Ausgabe führt JavaScript im Browser der Besucher aus. Verwenden Sie
+sie für `sset_google_analytics` nur dann, wenn alle Benutzer mit der Berechtigung
+`settings` Skripte auf der Website veröffentlichen dürfen. Geben Sie normalen
+Text mit `{{ }}` aus.
 
 ## Evolution Tags
 
-In Templates und Chunks können System Setting Tags verwendet werden:
+Evolution-Tags in Templates und Chunks fügen Werte ohne HTML-Maskierung ein.
+Maskieren Sie Text und prüfen Sie URLs passend zum Ausgabekontext.
 
 ```text
 [(sset_email)]
@@ -54,13 +60,14 @@ In Templates und Chunks können System Setting Tags verwendet werden:
 
 ## Bilder und Dateien
 
-Image- und File-Felder speichern Pfade. Verwenden Sie den Wert als `src`,
-`href` oder als Eingabe für eigene Asset-Helfer.
+`SettingUrl::resolve()` akzeptiert absolute HTTP(S)-URLs. Übergeben Sie
+`EVO_SITE_URL` als zweites Argument, um relative Website-Pfade für `src` oder
+`href` aufzulösen.
 
 ```blade
-@php($logo = evo()->getConfig('sset_logo', ''))
+@php($logo = \Seiger\sSettings\Support\SettingUrl::resolve(evo()->getConfig('sset_logo', ''), EVO_SITE_URL))
 
-@if($logo !== '')
+@if($logo !== null)
     <img src="{{ $logo }}" alt="">
 @endif
 ```

@@ -9,6 +9,9 @@ sSettings зберігає поля як системні налаштуванн
 $phone = evo()->getConfig('sset_phone', '');
 ```
 
+Для тексту в HTML використовуйте `{{ $value }}` або `@evoConfig('sset_phone')`.
+Обидва варіанти екранують значення.
+
 ## Приклади Blade
 
 Посилання телефону:
@@ -26,9 +29,9 @@ $phone = evo()->getConfig('sset_phone', '');
 Соціальне посилання:
 
 ```blade
-@php($facebook = evo()->getConfig('sset_facebook', ''))
+@php($facebook = \Seiger\sSettings\Support\SettingUrl::resolve(evo()->getConfig('sset_facebook', '')))
 
-@if($facebook !== '')
+@if($facebook !== null)
     <a href="{{ $facebook }}" rel="noopener" target="_blank">Facebook</a>
 @endif
 ```
@@ -39,12 +42,14 @@ $phone = evo()->getConfig('sset_phone', '');
 {!! evo()->getConfig('sset_google_analytics', '') !!}
 ```
 
-Виводьте textarea як raw HTML тільки тоді, коли значення контролюють довірені
-менеджери.
+Цей вивід виконує JavaScript у браузері відвідувача. Використовуйте його для
+`sset_google_analytics`, лише якщо всі, хто має право `settings`, можуть
+публікувати скрипти на сайті. Для звичайного тексту використовуйте `{{ }}`.
 
 ## Evolution теги
 
-У templates і chunks можна використовувати системний тег:
+Теги в шаблонах і чанках Evolution підставляють значення без HTML-екранування.
+Екрануйте текст і перевіряйте URL відповідно до місця виводу.
 
 ```text
 [(sset_email)]
@@ -54,13 +59,13 @@ $phone = evo()->getConfig('sset_phone', '');
 
 ## Зображення і файли
 
-Image і File поля зберігають шлях. Використовуйте значення як `src`, `href` або
-передавайте у власний asset helper.
+`SettingUrl::resolve()` приймає абсолютні HTTP(S) URL. З `EVO_SITE_URL` другим
+аргументом він також перетворює шлях відносно сайту на URL для `src` або `href`.
 
 ```blade
-@php($logo = evo()->getConfig('sset_logo', ''))
+@php($logo = \Seiger\sSettings\Support\SettingUrl::resolve(evo()->getConfig('sset_logo', ''), EVO_SITE_URL))
 
-@if($logo !== '')
+@if($logo !== null)
     <img src="{{ $logo }}" alt="">
 @endif
 ```

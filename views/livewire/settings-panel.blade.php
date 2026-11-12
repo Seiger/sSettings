@@ -259,8 +259,11 @@
                                 >
                                     <x-evo::icon :name="$type === 'image' ? 'photo' : 'file'" />
                                 </button>
-                                @if($type === 'image' && !empty($data[$name]))
-                                    <span class="evo-ui-image-preview" style="background-image: url('{{ str_starts_with((string) $data[$name], 'http') ? $data[$name] : EVO_SITE_URL . ltrim((string) $data[$name], '/') }}')"></span>
+                                @if($type === 'image')
+                                    @php($previewUrl = \Seiger\sSettings\Support\SettingUrl::resolve($data[$name] ?? null, EVO_SITE_URL))
+                                    @if($previewUrl !== null)
+                                        <img class="evo-ui-image-preview is-visible" width="160" height="90" style="position: static; object-fit: contain;" src="{{ $previewUrl }}" alt="">
+                                    @endif
                                 @endif
                             </span>
                         @else

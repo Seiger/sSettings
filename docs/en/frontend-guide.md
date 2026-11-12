@@ -9,6 +9,9 @@ prefix. Read them with `evo()->getConfig()`.
 $phone = evo()->getConfig('sset_phone', '');
 ```
 
+Use `{{ $value }}` or `@evoConfig('sset_phone')` for text in HTML.
+Both escape the value.
+
 ## Blade Examples
 
 Phone link:
@@ -26,9 +29,9 @@ Phone link:
 Social link:
 
 ```blade
-@php($facebook = evo()->getConfig('sset_facebook', ''))
+@php($facebook = \Seiger\sSettings\Support\SettingUrl::resolve(evo()->getConfig('sset_facebook', '')))
 
-@if($facebook !== '')
+@if($facebook !== null)
     <a href="{{ $facebook }}" rel="noopener" target="_blank">Facebook</a>
 @endif
 ```
@@ -39,12 +42,14 @@ Tracking script:
 {!! evo()->getConfig('sset_google_analytics', '') !!}
 ```
 
-Render textarea values as raw HTML only when trusted manager users control the
-value.
+This output runs JavaScript in visitors' browsers. Use it for
+`sset_google_analytics` only when everyone with the `settings` permission can
+publish scripts on the site. Use `{{ }}` for ordinary text.
 
 ## Evolution Tags
 
-In Evolution templates and chunks you can use the system setting tag:
+Evolution tags in templates and chunks insert values without HTML escaping.
+Escape text and validate URLs for the destination where you use them.
 
 ```text
 [(sset_email)]
@@ -54,13 +59,13 @@ In Evolution templates and chunks you can use the system setting tag:
 
 ## Images And Files
 
-Image and file fields store paths. Use the value as the `src`, `href`, or as
-input to your own asset helper.
+`SettingUrl::resolve()` accepts absolute HTTP(S) URLs. Pass `EVO_SITE_URL` as
+the second argument to resolve site-relative paths for `src` or `href`.
 
 ```blade
-@php($logo = evo()->getConfig('sset_logo', ''))
+@php($logo = \Seiger\sSettings\Support\SettingUrl::resolve(evo()->getConfig('sset_logo', ''), EVO_SITE_URL))
 
-@if($logo !== '')
+@if($logo !== null)
     <img src="{{ $logo }}" alt="">
 @endif
 ```

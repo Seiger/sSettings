@@ -9,6 +9,9 @@ sSettings stocke les champs comme paramètres système Evolution avec le préfix
 $phone = evo()->getConfig('sset_phone', '');
 ```
 
+Pour afficher du texte dans du HTML, utilisez `{{ $value }}` ou
+`@evoConfig('sset_phone')`. Les deux formes échappent la valeur.
+
 ## Exemples Blade
 
 Lien téléphone:
@@ -26,9 +29,9 @@ Lien téléphone:
 Lien social:
 
 ```blade
-@php($facebook = evo()->getConfig('sset_facebook', ''))
+@php($facebook = \Seiger\sSettings\Support\SettingUrl::resolve(evo()->getConfig('sset_facebook', '')))
 
-@if($facebook !== '')
+@if($facebook !== null)
     <a href="{{ $facebook }}" rel="noopener" target="_blank">Facebook</a>
 @endif
 ```
@@ -39,12 +42,16 @@ Script de suivi:
 {!! evo()->getConfig('sset_google_analytics', '') !!}
 ```
 
-N'affichez les textarea en raw HTML que si des managers de confiance contrôlent
-ces valeurs.
+Cette sortie exécute du JavaScript dans le navigateur des visiteurs. Utilisez-la
+pour `sset_google_analytics` uniquement si toutes les personnes qui disposent
+de la permission `settings` peuvent publier des scripts sur le site. Pour le
+texte ordinaire, utilisez `{{ }}`.
 
 ## Tags Evolution
 
-Dans les templates et chunks Evolution, utilisez les tags de paramètres système:
+Les balises Evolution insèrent les valeurs sans échappement HTML dans les
+modèles et les chunks. Échappez le texte et validez les URL selon leur contexte
+d’utilisation.
 
 ```text
 [(sset_email)]
@@ -54,13 +61,14 @@ Dans les templates et chunks Evolution, utilisez les tags de paramètres systèm
 
 ## Images et fichiers
 
-Les champs Image et File stockent des chemins. Utilisez la valeur comme `src`,
-`href` ou comme entrée pour votre propre helper d'assets.
+`SettingUrl::resolve()` accepte les URL HTTP(S) absolues. Passez `EVO_SITE_URL`
+en second argument pour résoudre les chemins relatifs au site destinés à `src`
+ou `href`.
 
 ```blade
-@php($logo = evo()->getConfig('sset_logo', ''))
+@php($logo = \Seiger\sSettings\Support\SettingUrl::resolve(evo()->getConfig('sset_logo', ''), EVO_SITE_URL))
 
-@if($logo !== '')
+@if($logo !== null)
     <img src="{{ $logo }}" alt="">
 @endif
 ```

@@ -9,6 +9,9 @@ sSettings zapisuje pola jako ustawienia systemowe Evolution z prefiksem
 $phone = evo()->getConfig('sset_phone', '');
 ```
 
+Tekst w HTML wyświetlaj przez `{{ $value }}` lub `@evoConfig('sset_phone')`.
+Oba zapisy kodują znaki specjalne HTML.
+
 ## Przykłady Blade
 
 Link telefonu:
@@ -26,9 +29,9 @@ Link telefonu:
 Link społecznościowy:
 
 ```blade
-@php($facebook = evo()->getConfig('sset_facebook', ''))
+@php($facebook = \Seiger\sSettings\Support\SettingUrl::resolve(evo()->getConfig('sset_facebook', '')))
 
-@if($facebook !== '')
+@if($facebook !== null)
     <a href="{{ $facebook }}" rel="noopener" target="_blank">Facebook</a>
 @endif
 ```
@@ -39,12 +42,14 @@ Skrypt śledzenia:
 {!! evo()->getConfig('sset_google_analytics', '') !!}
 ```
 
-Renderuj textarea jako raw HTML tylko wtedy, gdy wartość kontrolują zaufani
-managerowie.
+Ten zapis uruchamia JavaScript w przeglądarce odwiedzającego. Używaj go dla
+`sset_google_analytics`, jeśli wszyscy użytkownicy z uprawnieniem `settings`
+mogą publikować skrypty na stronie. Zwykły tekst wyświetlaj przez `{{ }}`.
 
 ## Tagi Evolution
 
-W templates i chunks można używać tagów ustawień systemowych:
+Tagi w szablonach i fragmentach Evolution wstawiają wartości bez kodowania
+HTML. Koduj tekst i sprawdzaj adresy URL odpowiednio do miejsca użycia.
 
 ```text
 [(sset_email)]
@@ -54,13 +59,14 @@ W templates i chunks można używać tagów ustawień systemowych:
 
 ## Obrazy i pliki
 
-Pola Image i File zapisują ścieżki. Użyj wartości jako `src`, `href` albo jako
-wejścia do własnego helpera assetów.
+`SettingUrl::resolve()` przyjmuje bezwzględne adresy HTTP(S). Przekaż
+`EVO_SITE_URL` jako drugi argument, aby zamienić ścieżkę względem witryny
+na adres URL do użycia w `src` lub `href`.
 
 ```blade
-@php($logo = evo()->getConfig('sset_logo', ''))
+@php($logo = \Seiger\sSettings\Support\SettingUrl::resolve(evo()->getConfig('sset_logo', ''), EVO_SITE_URL))
 
-@if($logo !== '')
+@if($logo !== null)
     <img src="{{ $logo }}" alt="">
 @endif
 ```
