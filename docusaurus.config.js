@@ -1,6 +1,7 @@
 const path = require('node:path');
 const {loadConfig} = require('./scripts/config.cjs');
-const remarkCover = require('./scripts/remark-cover.cjs');
+const remarkPackageImages = require('./scripts/remark-package-images.cjs');
+const remarkImageGroups = require('./scripts/remark-image-groups.cjs');
 const registry = loadConfig();
 const prepared = require('./.generated/registry.json');
 
@@ -37,7 +38,7 @@ module.exports = {
         locales: Object.keys(registry.locales),
         path: '.generated/i18n',
         localeConfigs: Object.fromEntries(Object.entries(registry.locales)
-            .map(([locale, label]) => [locale, {label, htmlLang: locale}]))
+            .map(([locale, label]) => [locale, {label, htmlLang: registry.localeSources?.[locale] || locale}]))
     },
     customFields: {documentation: registry},
     presets: [['classic', {
@@ -53,7 +54,7 @@ module.exports = {
             path: path.join(__dirname, '.generated/content', line.id),
             routeBasePath: line.route || '/',
             sidebarPath: require.resolve('./sidebars.js'),
-            beforeDefaultRemarkPlugins: line.cover ? [[remarkCover, line]] : []
+            beforeDefaultRemarkPlugins: [[remarkPackageImages, line], remarkImageGroups]
         }]),
         ['@docusaurus/plugin-client-redirects', {
             createRedirects: (route) => {

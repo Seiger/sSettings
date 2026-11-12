@@ -17,6 +17,7 @@
     "@docusaurus/plugin-client-redirects": "3.10.2",
     "@docusaurus/preset-classic": "3.10.2",
     "@docusaurus/theme-classic": "3.10.2",
+    "@docusaurus/theme-translations": "3.10.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   }

@@ -4,9 +4,9 @@ This branch holds the Docusaurus site for [sSettings](https://seiger.github.io/s
 The package branches hold the guides that dDocs and the website read.
 
 - `2.x` is the current line at `/sSettings/`. Its guides live in `docs/<locale>/`.
-  The Ukrainian directory is `docs/ua/` and the site's Ukrainian locale is `uk`.
-- `1.x` is archived at `/sSettings/1.x/`. Its English guides are used as a
-  fallback when that line has no translation.
+  The site locales `uk` and `ru` share the Ukrainian guides in `docs/ua/`.
+- `1.x` is archived at `/sSettings/1.x/`. It has English and Ukrainian guides.
+  Other languages fall back to English when there is no translation.
 - `docs.config.json` lists the branches, site languages and current line.
 
 The [sCommerce documentation branch](https://github.com/Seiger/sCommerce/tree/docs)

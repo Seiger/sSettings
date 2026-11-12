@@ -5,11 +5,20 @@
     "uk": "Українська",
     "de": "Deutsch",
     "fr": "Français",
-    "pl": "Polski"
+    "pl": "Polski",
+    "ru": "Русский"
   },
   "localeDirectories": {"uk": "ua"},
+  "localeSources": {"ru": "uk"},
   "lines": [
-    {"version": "2.x", "branch": "2.x", "label": "2.x", "status": "current", "cover": "assets/img/ssettings-manager.png"},
+    {
+      "version": "2.x",
+      "branch": "2.x",
+      "label": "2.x",
+      "status": "current",
+      "cover": "assets/img/ssettings-manager.png",
+      "screenshots": ["assets/img/ssettings-configuration.png", "assets/img/ssettings-field-editor.png"]
+    },
     {"version": "1.x", "branch": "1.x", "label": "1.x", "status": "legacy"}
   ]
 }

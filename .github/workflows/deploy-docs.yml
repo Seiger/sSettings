@@ -62,7 +62,7 @@ jobs:
             source/docs/de/**
             source/docs/fr/**
             source/docs/pl/**
-            source/docs/assets/img/ssettings-manager.png
+            source/docs/assets/img/ssettings-*.png
           if-no-files-found: error
           retention-days: 1
 

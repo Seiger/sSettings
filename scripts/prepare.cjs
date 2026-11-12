@@ -16,7 +16,7 @@ const siteDir = path.resolve(__dirname, '..');
 function prepare(config, sources = {}, root = siteDir) {
     const generated = path.join(root, '.generated');
     const connections = [];
-    const covers = [];
+    const images = [];
     for (const line of config.lines) {
         const checkout = path.resolve(root, sources[line.version] || `.sources/${line.version}`);
         const docs = path.join(checkout, 'docs');
@@ -34,14 +34,15 @@ function prepare(config, sources = {}, root = siteDir) {
         connections.push([primary, path.join(generated, 'content', line.id)]);
         for (const locale of Object.keys(config.locales)) {
             if (locale === config.defaultLocale) continue;
-            const translated = path.join(docs, config.localeDirectories?.[locale] || locale);
+            const source = config.localeSources?.[locale] || locale;
+            const translated = path.join(docs, config.localeDirectories?.[source] || source);
             if (fs.existsSync(path.join(translated, 'README.md'))) {
                 connections.push([translated, path.join(generated, 'i18n', locale,
                     `docusaurus-plugin-content-docs-${line.id}`, 'current')]);
             }
         }
-        if (line.cover) {
-            covers.push([path.join(docs, line.cover), path.join(generated, 'static', 'img', `${line.id}-cover.png`)]);
+        for (const [source, filename] of Object.entries(line.images)) {
+            images.push([path.join(docs, source), path.join(generated, 'static', 'img', filename)]);
         }
     }
     // Node removes junctions themselves, never the linked canonical directories.
@@ -50,13 +51,29 @@ function prepare(config, sources = {}, root = siteDir) {
         fs.mkdirSync(path.dirname(target), {recursive: true});
         fs.symlinkSync(source, target, process.platform === 'win32' ? 'junction' : 'dir');
     }
-    for (const [source, target] of covers) {
+    for (const [source, target] of images) {
         fs.mkdirSync(path.dirname(target), {recursive: true});
         fs.copyFileSync(source, target);
     }
     const translations = path.join(root, 'i18n');
     if (fs.existsSync(translations)) {
         fs.cpSync(translations, path.join(generated, 'i18n'), {recursive: true});
+    }
+    for (const [locale, source] of Object.entries(config.localeSources || {})) {
+        const sourceUi = path.join(translations, source);
+        const targetUi = path.join(generated, 'i18n', locale);
+        if (fs.existsSync(sourceUi)) {
+            fs.cpSync(sourceUi, targetUi, {recursive: true});
+        }
+        // The theme normally selects its defaults by the URL locale.
+        const defaults = require(`@docusaurus/theme-translations/locales/${source}/theme-common.json`);
+        const codePath = path.join(targetUi, 'code.json');
+        const custom = fs.existsSync(codePath) ? JSON.parse(fs.readFileSync(codePath, 'utf8')) : {};
+        fs.mkdirSync(targetUi, {recursive: true});
+        fs.writeFileSync(codePath, JSON.stringify({
+            ...Object.fromEntries(Object.entries(defaults).map(([id, message]) => [id, {message}])),
+            ...custom,
+        }, null, 2));
     }
     fs.writeFileSync(path.join(generated, 'registry.json'), JSON.stringify(config, null, 2));
 }

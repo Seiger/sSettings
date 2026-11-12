@@ -25,15 +25,20 @@ test('supports three lines and rejects ambiguous or unsafe registries', () => {
     assert.throws(() => validateConfig({...config, lines: [{...config.lines[0], version: '../outside'}]}));
     assert.throws(() => validateConfig({...config, localeDirectories: {uk: '../outside'}}));
     assert.throws(() => validateConfig({...config, localeDirectories: {fr: 'en'}}));
+    assert.throws(() => validateConfig({...config, localeSources: {uk: 'fr'}}));
+    assert.throws(() => validateConfig({...config, localeSources: {en: 'uk'}}));
     assert.throws(() => validateConfig({...config, lines: [{...config.lines[0], cover: '../outside.png'}]}));
+    assert.throws(() => validateConfig({...config, lines: [{...config.lines[0], screenshots: ['../outside.png']}]}));
 });
 
 test('build views link canonical sources without modifying them on repeated preparation', (t) => {
     const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ssettings-docs-'));
     t.after(() => fs.rmSync(root, {recursive: true, force: true}));
-    const config = validateConfig({defaultLocale: 'en', locales: {en: 'English', uk: 'Українська', fr: 'Français'},
-        localeDirectories: {uk: 'ua'},
-        lines: [{version: '1.x', branch: '1.x', label: '1.x', status: 'current', cover: 'assets/img/cover.png'}]});
+    const config = validateConfig({defaultLocale: 'en',
+        locales: {en: 'English', uk: 'Українська', fr: 'Français', ru: 'Русский'},
+        localeDirectories: {uk: 'ua'}, localeSources: {ru: 'uk'},
+        lines: [{version: '1.x', branch: '1.x', label: '1.x', status: 'current',
+            cover: 'assets/img/cover.png', screenshots: ['assets/img/editor.png']}]});
     const docs = path.join(root, 'package', 'docs');
     for (const locale of ['en', 'ua']) {
         fs.mkdirSync(path.join(docs, locale), {recursive: true});
@@ -42,6 +47,7 @@ test('build views link canonical sources without modifying them on repeated prep
     fs.writeFileSync(path.join(docs, 'docs.json'), JSON.stringify({package: 'seiger/ssettings'}));
     fs.mkdirSync(path.join(docs, 'assets/img'), {recursive: true});
     fs.writeFileSync(path.join(docs, 'assets/img/cover.png'), 'cover bytes');
+    fs.writeFileSync(path.join(docs, 'assets/img/editor.png'), 'editor bytes');
     fs.mkdirSync(path.join(root, 'i18n/uk'), {recursive: true});
     fs.writeFileSync(path.join(root, 'i18n/uk/code.json'), JSON.stringify({'docs.status.current': {message: 'Актуальна'}}));
     prepare(config, {'1.x': 'package'}, root);
@@ -52,9 +58,15 @@ test('build views link canonical sources without modifying them on repeated prep
     assert.equal(fs.realpathSync(view), fs.realpathSync(path.join(docs, 'en')));
     assert.equal(fs.readFileSync(path.join(root,
         '.generated/i18n/uk/docusaurus-plugin-content-docs-line-1-x/current/README.md'), 'utf8'), '# ua');
+    assert.equal(fs.readFileSync(path.join(root,
+        '.generated/i18n/ru/docusaurus-plugin-content-docs-line-1-x/current/README.md'), 'utf8'), '# ua');
     assert.ok(!fs.existsSync(path.join(root, 'versioned_docs')));
     assert.ok(!fs.existsSync(path.join(root, '.generated/i18n/fr/docusaurus-plugin-content-docs-line-1-x/current')));
     const ui = JSON.parse(fs.readFileSync(path.join(root, '.generated/i18n/uk/code.json'), 'utf8'));
     assert.equal(ui['docs.status.current'].message, 'Актуальна');
+    const aliasUi = JSON.parse(fs.readFileSync(path.join(root, '.generated/i18n/ru/code.json'), 'utf8'));
+    assert.equal(aliasUi['docs.status.current'].message, 'Актуальна');
+    assert.equal(aliasUi['theme.CodeBlock.copy'].message, 'Копіювати');
     assert.equal(fs.readFileSync(path.join(root, '.generated/static/img/line-1-x-cover.png'), 'utf8'), 'cover bytes');
+    assert.equal(fs.readFileSync(path.join(root, '.generated/static/img/line-1-x-screenshot-editor.png'), 'utf8'), 'editor bytes');
 });

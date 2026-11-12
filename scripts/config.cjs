@@ -18,6 +18,12 @@ function validateConfig(config) {
             throw new Error('Locale directories must map a site locale to a two-letter package directory.');
         }
     }
+    for (const [locale, source] of Object.entries(config.localeSources || {})) {
+        if (locale === config.defaultLocale || !config.locales[locale] ||
+            !config.locales[source] || config.localeSources[source]) {
+            throw new Error('Locale aliases must use a declared source locale without an alias.');
+        }
+    }
     if (config.lines.filter((line) => line.status === 'current').length !== 1) {
         throw new Error('Exactly one documentation line must be current.');
     }
@@ -28,11 +34,20 @@ function validateConfig(config) {
             || !['current', 'previous', 'legacy'].includes(line.status)) {
             throw new Error(`Invalid or duplicate documentation line: ${line.version}`);
         }
-        if (line.cover && !/^assets\/img\/[a-z0-9-]+\.png$/.test(line.cover)) {
-            throw new Error(`Invalid cover path for ${line.version}`);
+        const screenshots = line.screenshots ?? [];
+        if (!Array.isArray(screenshots)) {
+            throw new Error(`Invalid screenshots for ${line.version}`);
+        }
+        const assets = [...(line.cover ? [line.cover] : []), ...screenshots];
+        if (new Set(assets).size !== assets.length || assets.some((asset) =>
+            typeof asset !== 'string' || !/^assets\/img\/[a-z0-9-]+\.png$/.test(asset))) {
+            throw new Error(`Invalid image path for ${line.version}`);
         }
         versions.add(line.version);
-        return {...line, id: `line-${line.version.replace('.', '-')}`,
+        const id = `line-${line.version.replace('.', '-')}`;
+        const images = Object.fromEntries(assets.map((asset) =>
+            [asset, `${id}-${asset === line.cover ? 'cover.png' : `screenshot-${path.basename(asset)}`}`]));
+        return {...line, id, images,
             route: line.status === 'current' ? '' : line.version};
     });
     return {...config, lines};
