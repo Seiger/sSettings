@@ -16,6 +16,8 @@ scripts, file paths, images, and project-specific flags.
 - [Frontend Guide](frontend-guide.md)
 - [Releases and compatibility](releases.md)
 
+For installations on sSettings 1.x, see the [archived 1.x guides](https://seiger.github.io/sSettings/1.x/).
+
 ## Main Capabilities
 
 - Edit project settings in a compact evo-ui manager screen.
