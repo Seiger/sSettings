@@ -13,7 +13,8 @@
   ],
   "status": "complete",
   "locales": {
-    "en": "complete"
+    "en": "complete",
+    "ua": "complete"
   },
   "entrypoints": {
     "overview": {
