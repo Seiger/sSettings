@@ -1,0 +1,17 @@
+{
+  "docs.status.current": {
+    "message": "Actuelle"
+  },
+  "docs.status.previous": {
+    "message": "Précédente"
+  },
+  "docs.status.legacy": {
+    "message": "Archive"
+  },
+  "docs.legacy.message": {
+    "message": "Cette documentation concerne une version antérieure."
+  },
+  "docs.legacy.current": {
+    "message": "Lire la documentation actuelle"
+  }
+}

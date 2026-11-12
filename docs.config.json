@@ -1,0 +1,15 @@
+{
+  "defaultLocale": "en",
+  "locales": {
+    "en": "English",
+    "uk": "Українська",
+    "de": "Deutsch",
+    "fr": "Français",
+    "pl": "Polski"
+  },
+  "localeDirectories": {"uk": "ua"},
+  "lines": [
+    {"version": "2.x", "branch": "2.x", "label": "2.x", "status": "current", "cover": "assets/img/ssettings-manager.png"},
+    {"version": "1.x", "branch": "1.x", "label": "1.x", "status": "legacy"}
+  ]
+}
