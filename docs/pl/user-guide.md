@@ -1,3 +1,7 @@
+---
+sidebar_position: 2
+---
+
 # Przewodnik użytkownika
 
 ## Wielojęzyczne pola tekstowe

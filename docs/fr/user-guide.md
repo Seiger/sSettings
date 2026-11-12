@@ -1,3 +1,7 @@
+---
+sidebar_position: 2
+---
+
 # Guide utilisateur
 
 ## Champs de texte multilingues
