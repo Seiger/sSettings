@@ -2,12 +2,16 @@
 
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 use Seiger\sSettings\Support\FieldCatalog;
 use Seiger\sSettings\Support\SettingsSchemaRepository;
 use Seiger\sSettings\Support\SystemSettingsStore;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 /**
+ * Loads and edits the settings schema for authorized managers.
+ *
  * @phpstan-type OptionRow array{value: string, label: string}
  * @phpstan-type FieldRow array<string, mixed>
  * @phpstan-type TabRow array<string, mixed>
@@ -17,13 +21,31 @@ use Seiger\sSettings\Support\SystemSettingsStore;
 class ConfigurePanel extends Component
 {
     /** @var array<int, TabRow> */
+    #[Locked]
     public array $tabs = [];
     /** @var array<int, TabRow> */
     public array $cleanTabs = [];
+    #[Locked]
+    public ?string $schemaRevision = null;
+    /** @var array<string, bool> Removed names map to true and renamed names to false. */
+    #[Locked]
+    public array $retiredFields = [];
     public bool $dirty = false;
     public bool $saved = false;
     public string $error = '';
     public string $openFieldUid = '';
+
+    /**
+     * Check the current manager permission before mounting or processing an update.
+     *
+     * @since 2.1.0
+     */
+    public function boot(): void
+    {
+        if (!evo()->hasPermission('settings', 'mgr')) {
+            throw new AccessDeniedHttpException();
+        }
+    }
 
     public function mount(SettingsSchemaRepository $schema): void
     {
@@ -60,12 +82,16 @@ class ConfigurePanel extends Component
         $this->dispatch('evo-ui:inline-create.created', root: 'ssettings-configure', id: $tab['_uid'], uid: $tab['_uid']);
     }
 
+    /** Record the fields explicitly removed with this tab before changing editor state. */
     public function removeTab(int $index): void
     {
         if (count($this->tabs) < 2 || !isset($this->tabs[$index])) {
             return;
         }
 
+        foreach ($this->tabs[$index]['fields'] as $field) {
+            $this->retiredFields[$field['name']] = true;
+        }
         unset($this->tabs[$index]);
         $this->tabs = array_values($this->tabs);
         $this->updatedTabs();
@@ -134,7 +160,11 @@ class ConfigurePanel extends Component
         }
     }
 
-    /** @param array<mixed> $options */
+    /**
+     * Update a field and preserve its previous values when the manager renames it.
+     *
+     * @param array<mixed> $options
+     */
     public function updateFieldByUid(string $fieldUid, string $name, string $label, string $description, string $type, array $options = [], ?bool $multilingual = null): void
     {
         $catalog = app(FieldCatalog::class);
@@ -146,6 +176,9 @@ class ConfigurePanel extends Component
                     continue;
                 }
 
+                if ($field['name'] !== $name) {
+                    $this->retiredFields[$field['name']] = false;
+                }
                 $this->tabs[$tabIndex]['fields'][$fieldIndex]['name'] = $name;
                 $this->tabs[$tabIndex]['fields'][$fieldIndex]['label'] = $label;
                 $this->tabs[$tabIndex]['fields'][$fieldIndex]['description'] = $description;
@@ -167,12 +200,14 @@ class ConfigurePanel extends Component
         }
     }
 
+    /** Record an explicit field removal for the next schema save. */
     public function removeField(int $tabIndex, int $fieldIndex): void
     {
         if (!isset($this->tabs[$tabIndex]['fields'][$fieldIndex])) {
             return;
         }
 
+        $this->retiredFields[$this->tabs[$tabIndex]['fields'][$fieldIndex]['name']] = true;
         unset($this->tabs[$tabIndex]['fields'][$fieldIndex]);
         $this->tabs[$tabIndex]['fields'] = array_values($this->tabs[$tabIndex]['fields']);
         $this->updatedTabs();
@@ -365,6 +400,7 @@ class ConfigurePanel extends Component
         $this->updatedTabs();
     }
 
+    /** Save the editor schema with the revision and field removals recorded by the server. */
     public function save(SettingsSchemaRepository $schema, SystemSettingsStore $store): bool
     {
         if (!evo()->hasPermission('settings', 'mgr')) {
@@ -377,10 +413,9 @@ class ConfigurePanel extends Component
         $this->error = '';
 
         try {
-            $candidate = $schema->normalize($this->toSchema());
-            $store->fieldDefinitions($candidate);
-            $normalized = $schema->save($candidate);
-            $store->syncSchema($normalized);
+            $normalized = $store->saveSchema($schema, $this->toSchema(), $this->schemaRevision, $this->retiredFields);
+            $this->schemaRevision = hash('sha256', serialize($normalized));
+            $this->retiredFields = [];
             $this->openFieldUid = '';
             $this->fillDataFromSchema($normalized);
             $this->saved = true;
@@ -405,9 +440,13 @@ class ConfigurePanel extends Component
         ]);
     }
 
+    /** Load the editor from the same snapshot used to identify its persisted baseline. */
     protected function fillData(SettingsSchemaRepository $schema): void
     {
-        $this->fillDataFromSchema($schema->read());
+        $snapshot = $schema->readSnapshot();
+        $this->schemaRevision = $snapshot['revision'];
+        $this->retiredFields = [];
+        $this->fillDataFromSchema($snapshot['schema']);
     }
 
     /** @param array<string, SchemaTab> $schema */

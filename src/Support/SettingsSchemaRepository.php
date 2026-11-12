@@ -43,19 +43,63 @@ final class SettingsSchemaRepository
     /** @return array<string, SchemaTab> */
     public function read(): array
     {
+        return $this->readSnapshot()['schema'];
+    }
+
+    /**
+     * Read the editor schema and identify the persisted version when it is usable for pruning.
+     *
+     * The fallback remains available to the editor but carries no revision for deletion.
+     *
+     * @return array{schema: array<string, SchemaTab>, revision: ?string}
+     * @since 2.1.0
+     */
+    public function readSnapshot(): array
+    {
         $path = $this->path();
-
-        if (!is_file($path)) {
-            return $this->defaultSchema();
+        $schema = [];
+        if (is_file($path) && is_readable($path)) {
+            try {
+                $schema = require $path;
+            } catch (Throwable) {
+                $schema = [];
+            }
         }
 
-        try {
-            $schema = require $path;
-        } catch (Throwable) {
-            $schema = [];
+        $normalized = $this->normalize(is_array($schema) ? $schema : []);
+
+        return [
+            'schema' => $normalized,
+            'revision' => is_array($schema) && $this->hasValidStructure($schema)
+                ? hash('sha256', serialize($normalized))
+                : null,
+        ];
+    }
+
+    /**
+     * Check the source before normalization can fill in missing tab or field data.
+     *
+     * @param array<mixed> $tabs
+     * @since 2.1.0
+     */
+    public function hasValidStructure(array $tabs): bool
+    {
+        $names = [];
+        foreach ($tabs as $tab) {
+            if (!is_array($tab) || !is_array($tab['fields'] ?? null)) {
+                return false;
+            }
+
+            foreach ($tab['fields'] as $field) {
+                if (!is_array($field) || !is_string($field['name'] ?? null) || trim($field['name']) === ''
+                    || !is_string($field['type'] ?? null) || trim($field['type']) === '' || isset($names[$field['name']])) {
+                    return false;
+                }
+                $names[$field['name']] = true;
+            }
         }
 
-        return $this->normalize(is_array($schema) ? $schema : []);
+        return $tabs !== [];
     }
 
     /**

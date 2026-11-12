@@ -7,6 +7,7 @@
 [![Issues](https://img.shields.io/github/issues/Seiger/ssettings)](https://github.com/Seiger/ssettings/issues)
 [![Stars](https://img.shields.io/packagist/stars/Seiger/ssettings)](https://packagist.org/packages/seiger/ssettings)
 [![Total Downloads](https://img.shields.io/packagist/dt/seiger/ssettings)](https://packagist.org/packages/seiger/ssettings)
+![Made in Ukraine](https://img.shields.io/badge/made_in-Ukraine-ffd700.svg?labelColor=0057b7)
 
 **sSettings** is a powerful plugin meticulously crafted for Evolution CMS, providing an
 extensive array of advanced settings to elevate your website's customization capabilities.

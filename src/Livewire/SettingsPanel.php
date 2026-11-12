@@ -6,8 +6,11 @@ use Livewire\Component;
 use Seiger\sSettings\Support\FieldCatalog;
 use Seiger\sSettings\Support\SettingsSchemaRepository;
 use Seiger\sSettings\Support\SystemSettingsStore;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 /**
+ * Loads and saves schema-defined settings for authorized managers.
+ *
  * @phpstan-type SchemaField array{name: string, label: string, description: string, type: string, options?: string, multilingual?: bool}
  * @phpstan-type SchemaTab array{label: string, fields: list<SchemaField>}
  */
@@ -23,6 +26,18 @@ class SettingsPanel extends Component
     public bool $dirty = false;
     public bool $saved = false;
 
+    /**
+     * Check the current manager permission before mounting or processing an update.
+     *
+     * @since 2.1.0
+     */
+    public function boot(): void
+    {
+        if (!evo()->hasPermission('settings', 'mgr')) {
+            throw new AccessDeniedHttpException();
+        }
+    }
+
     public function mount(SettingsSchemaRepository $schema, SystemSettingsStore $store, string $activeTab = ''): void
     {
         $this->activeTab = $activeTab;
@@ -35,8 +50,17 @@ class SettingsPanel extends Component
         $this->dirty = $this->snapshot($this->data) !== $this->snapshot($this->cleanData);
     }
 
+    /**
+     * Persist values against the current server schema after checking permission.
+     *
+     * A denied save stops before writing settings or clearing the cache.
+     */
     public function save(SettingsSchemaRepository $schema, SystemSettingsStore $store): void
     {
+        if (!evo()->hasPermission('settings', 'mgr')) {
+            throw new AccessDeniedHttpException();
+        }
+
         $this->saved = false;
         $store->saveValues($schema->read(), $this->data);
         $this->fillData($schema, $store);

@@ -5,8 +5,11 @@ use Illuminate\Contracts\View\View;
 use Livewire\Component;
 use Livewire\Attributes\On;
 use Seiger\sSettings\Support\SettingsSchemaRepository;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 /**
+ * Builds the module navigation from the schema for authorized managers.
+ *
  * @phpstan-type SchemaField array{name: string, label: string, description: string, type: string, options?: string}
  * @phpstan-type SchemaTab array{label: string, fields: list<SchemaField>}
  * @phpstan-type ModuleTab array{key: string, label: string, icon: string, type: string, permission?: string}
@@ -16,6 +19,18 @@ class ModulePanel extends Component
     public string $activeTab = 'settings';
     public bool $showUnsavedPrompt = false;
     public string $pendingTab = '';
+
+    /**
+     * Check the current manager permission before mounting or processing an update.
+     *
+     * @since 2.1.0
+     */
+    public function boot(): void
+    {
+        if (!evo()->hasPermission('settings', 'mgr')) {
+            throw new AccessDeniedHttpException();
+        }
+    }
 
     public function mount(SettingsSchemaRepository $schema, string $activeTab = 'settings'): void
     {

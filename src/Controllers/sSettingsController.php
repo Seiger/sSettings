@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\View as ViewFactory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 
+/** Renders the sSettings module for managers with the settings permission. */
 class sSettingsController
 {
     /**
@@ -26,16 +27,13 @@ class sSettingsController
      */
     public function configure(): View
     {
-        if (!evo()->hasPermission('settings', 'mgr')) {
-            $message = __('global.access_permission_denied');
-            evo()->webAlertAndQuit(is_string($message) ? $message : 'Access permission denied.', "index.php?a=2");
-        }
-
         return $this->view('index', ['activeTab' => 'configure']);
     }
 
     /**
-     * Display render
+     * Check the manager's settings permission before building a module view.
+     *
+     * Both HTTP routes and the file module render through this method.
      *
      * @param string $tpl
      * @param array<string, mixed> $data
@@ -43,6 +41,11 @@ class sSettingsController
      */
     public function view(string $tpl, array $data = []): View
     {
+        if (!evo()->hasPermission('settings', 'mgr')) {
+            $message = __('global.access_permission_denied');
+            evo()->webAlertAndQuit(is_string($message) ? $message : 'Access permission denied.', 'index.php?a=2');
+        }
+
         return ViewFactory::make('sSettings::'.$tpl, $data);
     }
 }

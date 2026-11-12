@@ -23,11 +23,13 @@ $db->getConnection()->getSchemaBuilder()->create('system_settings', function ($t
     $table->text('setting_value')->nullable();
 });
 $GLOBALS['testEvo'] = new class {
+    public array $cacheClears = [];
+
     public function getConfig($key, $default = '') {
         return EvolutionCMS\Models\SystemSetting::query()->find($key)?->setting_value ?? $default;
     }
     public function setConfig($key, $value) {}
-    public function clearCache($type) {}
+    public function clearCache($type) { $this->cacheClears[] = $type; }
     public function getLocale() { return 'uk'; }
 };
 $checks = 0;
@@ -48,6 +50,9 @@ $fakeLang = new class {
     public function langDefault() { return 'uk'; }
     public function langConfig() { return $this->languages; }
 };
+if (!class_exists(\Seiger\sLang\sLang::class)) {
+    class_alias($fakeLang::class, \Seiger\sLang\sLang::class);
+}
 $container->instance('sLang', $fakeLang);
 $check(['uk', 'en'], $languages->locales(), 'configured languages');
 $check(['notice_uk', 'notice_en'], array_column($store->fieldDefinitions($definition), 'name'), 'localized keys');
@@ -55,8 +60,23 @@ EvolutionCMS\Models\SystemSetting::query()->create(['setting_name' => 'sset_noti
 $store->syncSchema($definition);
 $check('Initial', $store->values($definition)['sset_notice_uk'], 'seed default language');
 $check('', $store->values($definition)['sset_notice_en'], 'other language starts empty');
+evo()->cacheClears = [];
 $store->saveValues($definition, ['sset_notice_uk' => 'Привіт', 'sset_notice_en' => 'Hello']);
 $check('Привіт', evo()->getConfig('sset_notice'), 'legacy key tracks default');
+$check(['full'], evo()->cacheClears, 'multiple changed values clear the full cache once');
+
+evo()->cacheClears = [];
+$store->saveValues($definition, ['sset_notice_uk' => ' Привіт ', 'sset_notice_en' => 'Hello']);
+$check([], evo()->cacheClears, 'values unchanged after normalization preserve the cache');
+$store->saveValues($definition, []);
+$store->saveValues($definition, ['sset_unknown' => 'ignored']);
+$check([], evo()->cacheClears, 'empty or ignored submissions preserve the cache');
+
+EvolutionCMS\Models\SystemSetting::query()->where('setting_name', 'sset_notice')->update(['setting_value' => 'Stale']);
+$store->saveValues($definition, ['sset_notice_uk' => 'Привіт']);
+$check('Привіт', evo()->getConfig('sset_notice'), 'an unchanged locale repairs its stale base value');
+$check(['full'], evo()->cacheClears, 'a base value change alone clears the full cache');
+
 $fakeLang->languages = ['uk'];
 $store->syncSchema($definition);
 $check('Hello', evo()->getConfig('sset_notice_en'), 'removed language retained');
@@ -89,5 +109,81 @@ $conflict['basic']['fields'][1]['name'] = 'notice_de';
 try { $store->fieldDefinitions($conflict); throw new RuntimeException('Future collision accepted'); }
 catch (RuntimeException $error) { $check('sSettings::global.multilingual_key_conflict', $error->getMessage(), 'future language collision rejected'); }
 $store->syncSchema(['basic' => ['fields' => []]]);
-$check(0, EvolutionCMS\Models\SystemSetting::query()->count(), 'removed field cleans owned values');
+$check('Hello', evo()->getConfig('sset_notice_en'), 'an empty sync preserves all settings');
+
+$temporaryCore = sys_get_temp_dir() . '/ssettings-pruning-' . bin2hex(random_bytes(8));
+if (defined('EVO_CORE_PATH')) {
+    throw new RuntimeException('The pruning fixture requires an isolated core path');
+}
+define('EVO_CORE_PATH', $temporaryCore . '/');
+$path = $schema->path();
+mkdir(dirname($path), 0700, true);
+try {
+    foreach (['sset_notice_fr', 'sset_external', 'ssetXoutside'] as $key) {
+        EvolutionCMS\Models\SystemSetting::query()->create(['setting_name' => $key, 'setting_value' => 'External']);
+    }
+
+    $keep = ['name' => 'keep', 'type' => 'text'];
+    $external = ['name' => 'external', 'type' => 'text'];
+    $complete = ['basic' => ['fields' => [$field, $keep, $external]]];
+    $remaining = ['basic' => ['fields' => [$keep, $external]]];
+    $save = static fn (array $tabs, array $retired = []) => $store->saveSchema($schema, $tabs, $schema->readSnapshot()['revision'], $retired);
+    $save($complete);
+
+    $store->syncSchema($remaining);
+    $check('Hello', evo()->getConfig('sset_notice_en'), 'a partial sync without explicit removal preserves settings');
+
+    $save(['basic' => ['fields' => []]], ['notice' => true, 'keep' => true, 'external' => true]);
+    $check('Hello', evo()->getConfig('sset_notice_en'), 'explicit removal of every field preserves all values');
+    $save($complete);
+
+    $save(['basic' => ['fields' => [$keep]]], ['notice' => true]);
+    $check('Hello', evo()->getConfig('sset_notice_en'), 'a second unexplained omission prevents all pruning');
+    $save($complete);
+
+    $revision = $schema->readSnapshot()['revision'];
+    $schema->save(['basic' => ['label' => 'Edited elsewhere', 'fields' => [$field, $keep, $external]]]);
+    $store->saveSchema($schema, $remaining, $revision, ['notice' => true]);
+    $check('Hello', evo()->getConfig('sset_notice_en'), 'a stale editor cannot prune');
+    $save($complete);
+
+    $schema->save(['basic' => ['fields' => [$field, $keep]]]);
+    $save(['basic' => ['fields' => [$keep]]], ['notice' => true]);
+    $check('Hello', evo()->getConfig('sset_notice_en'), 'an incomplete persisted schema prevents all pruning');
+    $save($complete);
+
+    foreach (['<?php return [', '<?php return [];', '<?php return ["basic" => ["fields" => [["type" => "text"]]]];'] as $invalidSchema) {
+        file_put_contents($path, $invalidSchema);
+        $check(null, $schema->readSnapshot()['revision'], 'an unusable schema has no revision for pruning');
+        $save($remaining, ['notice' => true]);
+        $check('Hello', evo()->getConfig('sset_notice_en'), 'a fallback schema cannot prune');
+        $save($complete);
+    }
+
+    $fakeLang->languages = ['uk'];
+    $save(['basic' => ['fields' => [$keep]]], ['notice' => true, 'external' => true]);
+    $check(null, evo()->getConfig('sset_notice_uk', null), 'explicit removal prunes a registered active locale');
+    $check(null, evo()->getConfig('sset_notice_en', null), 'explicit removal prunes a registered archived locale');
+    $check('Новий', evo()->getConfig('sset_notice'), 'an existing base key is never claimed retroactively');
+    foreach (['sset_notice_fr', 'sset_external', 'ssetXoutside'] as $key) {
+        $check('External', evo()->getConfig($key), 'preserve key created outside sSettings: ' . $key);
+    }
+    $check('', evo()->getConfig('sset_keep', null), 'preserve the remaining field');
+
+    $written = ['name' => 'written', 'type' => 'text'];
+    $withWritten = ['basic' => ['fields' => [$keep, $written]]];
+    evo()->cacheClears = [];
+    $store->saveValues($withWritten, ['sset_written' => 'Created by the values panel']);
+    $check(['full'], evo()->cacheClears, 'creating a setting clears the full cache');
+    $save($withWritten);
+    $save(['basic' => ['fields' => [$keep]]], ['written' => true]);
+    $check(null, evo()->getConfig('sset_written', null), 'explicit removal prunes a key created by saving values');
+} finally {
+    if (is_file($path)) {
+        unlink($path);
+    }
+    for ($directory = dirname($path); $directory !== dirname($temporaryCore); $directory = dirname($directory)) {
+        rmdir($directory);
+    }
+}
 echo "Multilingual checks passed: {$checks}\n";
