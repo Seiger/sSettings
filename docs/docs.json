@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "package": "seiger/ssettings",
+  "title": "sSettings",
+  "canonicalLocale": "en",
+  "visibility": "public",
+  "generated": false,
+  "legacy": false,
+  "audience": [
+    "manager-users",
+    "developers",
+    "integrators"
+  ],
+  "status": "complete",
+  "locales": {
+    "en": "complete",
+    "ua": "complete",
+    "de": "complete",
+    "fr": "complete",
+    "pl": "complete"
+  },
+  "entrypoints": {
+    "overview": {
+      "type": "explanation",
+      "path": "en/README.md",
+      "status": "complete"
+    },
+    "user": {
+      "type": "how-to",
+      "path": "en/user-guide.md",
+      "status": "complete"
+    },
+    "developer": {
+      "type": "explanation",
+      "path": "en/developer-guide.md",
+      "status": "complete"
+    },
+    "frontend": {
+      "type": "how-to",
+      "path": "en/frontend-guide.md",
+      "status": "complete"
+    },
+    "releases": {
+      "type": "reference",
+      "path": "en/releases.md",
+      "status": "complete"
+    }
+  }
+}
