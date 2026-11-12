@@ -11,7 +11,11 @@ scripts, file paths, images, and project-specific flags.
 
 ## Settings screen
 
-![sSettings manager with project settings and configuration tabs](../assets/img/ssettings-manager.png)
+![Settings values](../assets/img/ssettings-manager.png)
+
+![Settings schema](../assets/img/ssettings-configuration.png)
+
+![Field editor](../assets/img/ssettings-field-editor.png)
 
 ## Guides
 

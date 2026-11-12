@@ -11,7 +11,11 @@ sSettings додає компактний екран налаштувань у �
 
 ## Екран налаштувань
 
-![Панель sSettings із вкладками налаштувань і конфігурації](../assets/img/ssettings-manager.png)
+![Значення налаштувань](../assets/img/ssettings-manager.png)
+
+![Схема налаштувань](../assets/img/ssettings-configuration.png)
+
+![Редагування поля](../assets/img/ssettings-field-editor.png)
 
 ## Розділи
 

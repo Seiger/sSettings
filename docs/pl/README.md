@@ -11,7 +11,11 @@ społecznościowych, skryptów śledzenia, plików, obrazów i flag konfiguracyj
 
 ## Ekran ustawień
 
-![Panel sSettings z zakładkami ustawień i konfiguracji](../assets/img/ssettings-manager.png)
+![Wartości ustawień](../assets/img/ssettings-manager.png)
+
+![Schemat ustawień](../assets/img/ssettings-configuration.png)
+
+![Edycja pola](../assets/img/ssettings-field-editor.png)
 
 ## Przewodniki
 

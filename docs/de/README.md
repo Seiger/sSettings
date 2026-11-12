@@ -11,7 +11,11 @@ Social Links, Tracking-Skripte, Dateien, Bilder und Konfigurationsflags.
 
 ## Einstellungsansicht
 
-![sSettings-Manager mit Registerkarten für Einstellungen und Konfiguration](../assets/img/ssettings-manager.png)
+![Einstellungswerte](../assets/img/ssettings-manager.png)
+
+![Einstellungsschema](../assets/img/ssettings-configuration.png)
+
+![Feld bearbeiten](../assets/img/ssettings-field-editor.png)
 
 ## Anleitungen
 

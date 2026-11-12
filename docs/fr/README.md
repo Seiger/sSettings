@@ -12,7 +12,11 @@ site.
 
 ## Écran des réglages
 
-![Interface sSettings avec les onglets de réglages et de configuration](../assets/img/ssettings-manager.png)
+![Valeurs des réglages](../assets/img/ssettings-manager.png)
+
+![Schéma des réglages](../assets/img/ssettings-configuration.png)
+
+![Modification d’un champ](../assets/img/ssettings-field-editor.png)
 
 ## Guides
 
